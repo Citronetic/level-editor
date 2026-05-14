@@ -1,0 +1,1686 @@
+{
+  "InitialArenaLevels": [
+    {
+      "levelIndex": 1,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-17"
+    },
+    {
+      "levelIndex": 2,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-162"
+    },
+    {
+      "levelIndex": 3,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-203"
+    },
+    {
+      "levelIndex": 4,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-134"
+    },
+    {
+      "levelIndex": 120,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-85"
+    },
+    {
+      "levelIndex": 6,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 46,
+      "seedId": "t64-level-19"
+    },
+    {
+      "levelIndex": 7,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-207"
+    },
+    {
+      "levelIndex": 8,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-108"
+    },
+    {
+      "levelIndex": 9,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 120,
+      "seedId": "t64-level-239"
+    },
+    {
+      "levelIndex": 10,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-220"
+    }
+  ],
+  "ArenaLoopLevels": [
+    {
+      "levelIndex": 11,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-31"
+    },
+    {
+      "levelIndex": 12,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-242"
+    },
+    {
+      "levelIndex": 13,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-43"
+    },
+    {
+      "levelIndex": 14,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-74"
+    },
+    {
+      "levelIndex": 15,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-55"
+    },
+    {
+      "levelIndex": 16,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-76"
+    },
+    {
+      "levelIndex": 17,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-137"
+    },
+    {
+      "levelIndex": 18,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 210,
+      "seedId": "t64-level-138"
+    },
+    {
+      "levelIndex": 19,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 105,
+      "seedId": "t64-level-249"
+    },
+    {
+      "levelIndex": 20,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-40"
+    },
+    {
+      "levelIndex": 21,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-211"
+    },
+    {
+      "levelIndex": 22,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-212"
+    },
+    {
+      "levelIndex": 23,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-53"
+    },
+    {
+      "levelIndex": 24,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 165,
+      "seedId": "t64-level-244"
+    },
+    {
+      "levelIndex": 25,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-155"
+    },
+    {
+      "levelIndex": 26,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-126"
+    },
+    {
+      "levelIndex": 27,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-187"
+    },
+    {
+      "levelIndex": 28,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-48"
+    },
+    {
+      "levelIndex": 29,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 110,
+      "seedId": "t64-level-149"
+    },
+    {
+      "levelIndex": 30,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-70"
+    },
+    {
+      "levelIndex": 31,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-38"
+    },
+    {
+      "levelIndex": 32,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-182"
+    },
+    {
+      "levelIndex": 33,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-33"
+    },
+    {
+      "levelIndex": 34,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-194"
+    },
+    {
+      "levelIndex": 35,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-185"
+    },
+    {
+      "levelIndex": 36,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-226"
+    },
+    {
+      "levelIndex": 37,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 165,
+      "seedId": "t64-level-117"
+    },
+    {
+      "levelIndex": 38,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-78"
+    },
+    {
+      "levelIndex": 39,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 90,
+      "seedId": "t64-level-229"
+    },
+    {
+      "levelIndex": 40,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-170"
+    },
+    {
+      "levelIndex": 41,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-111"
+    },
+    {
+      "levelIndex": 42,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-62"
+    },
+    {
+      "levelIndex": 43,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-193"
+    },
+    {
+      "levelIndex": 44,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-84"
+    },
+    {
+      "levelIndex": 45,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-145"
+    },
+    {
+      "levelIndex": 46,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-136"
+    },
+    {
+      "levelIndex": 47,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-217"
+    },
+    {
+      "levelIndex": 48,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-198"
+    },
+    {
+      "levelIndex": 49,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 75,
+      "seedId": "t64-level-19"
+    },
+    {
+      "levelIndex": 50,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-240"
+    },
+    {
+      "levelIndex": 51,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-71"
+    },
+    {
+      "levelIndex": 52,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-122"
+    },
+    {
+      "levelIndex": 53,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-93"
+    },
+    {
+      "levelIndex": 54,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-144"
+    },
+    {
+      "levelIndex": 55,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-195"
+    },
+    {
+      "levelIndex": 56,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-186"
+    },
+    {
+      "levelIndex": 57,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 100,
+      "seedId": "t64-level-247"
+    },
+    {
+      "levelIndex": 58,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-28"
+    },
+    {
+      "levelIndex": 59,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 150,
+      "seedId": "t64-level-199"
+    },
+    {
+      "levelIndex": 60,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-283"
+    },
+    {
+      "levelIndex": 61,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-181"
+    },
+    {
+      "levelIndex": 62,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-142"
+    },
+    {
+      "levelIndex": 63,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-183"
+    },
+    {
+      "levelIndex": 64,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-154"
+    },
+    {
+      "levelIndex": 65,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-245"
+    },
+    {
+      "levelIndex": 66,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-286"
+    },
+    {
+      "levelIndex": 67,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-167"
+    },
+    {
+      "levelIndex": 68,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-18"
+    },
+    {
+      "levelIndex": 69,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 120,
+      "seedId": "t64-level-289"
+    },
+    {
+      "levelIndex": 70,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 165,
+      "seedId": "t64-level-180"
+    },
+    {
+      "levelIndex": 71,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-61"
+    },
+    {
+      "levelIndex": 72,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-112"
+    },
+    {
+      "levelIndex": 73,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-83"
+    },
+    {
+      "levelIndex": 74,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 65,
+      "seedId": "t64-level-224"
+    },
+    {
+      "levelIndex": 75,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-115"
+    },
+    {
+      "levelIndex": 76,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-266"
+    },
+    {
+      "levelIndex": 77,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-27"
+    },
+    {
+      "levelIndex": 78,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-98"
+    },
+    {
+      "levelIndex": 79,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 120,
+      "seedId": "t64-level-89"
+    },
+    {
+      "levelIndex": 80,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-110"
+    },
+    {
+      "levelIndex": 81,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-221"
+    },
+    {
+      "levelIndex": 82,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-172"
+    },
+    {
+      "levelIndex": 83,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-113"
+    },
+    {
+      "levelIndex": 84,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 80,
+      "seedId": "t64-level-204"
+    },
+    {
+      "levelIndex": 85,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-215"
+    },
+    {
+      "levelIndex": 86,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-166"
+    },
+    {
+      "levelIndex": 87,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-87"
+    },
+    {
+      "levelIndex": 88,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-258"
+    },
+    {
+      "levelIndex": 89,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 150,
+      "seedId": "t64-level-179"
+    },
+    {
+      "levelIndex": 90,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-160"
+    },
+    {
+      "levelIndex": 91,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-131"
+    },
+    {
+      "levelIndex": 92,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-32"
+    },
+    {
+      "levelIndex": 93,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-63"
+    },
+    {
+      "levelIndex": 94,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 80,
+      "seedId": "t64-level-234"
+    },
+    {
+      "levelIndex": 95,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-275"
+    },
+    {
+      "levelIndex": 96,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-206"
+    },
+    {
+      "levelIndex": 97,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-157"
+    },
+    {
+      "levelIndex": 98,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-158"
+    },
+    {
+      "levelIndex": 99,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 115,
+      "seedId": "t64-level-59"
+    },
+    {
+      "levelIndex": 100,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-58"
+    },
+    {
+      "levelIndex": 101,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-67"
+    },
+    {
+      "levelIndex": 102,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-282"
+    },
+    {
+      "levelIndex": 103,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-253"
+    },
+    {
+      "levelIndex": 104,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-124"
+    },
+    {
+      "levelIndex": 105,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-105"
+    },
+    {
+      "levelIndex": 106,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-176"
+    },
+    {
+      "levelIndex": 107,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-147"
+    },
+    {
+      "levelIndex": 108,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-68"
+    },
+    {
+      "levelIndex": 109,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 120,
+      "seedId": "t64-level-219"
+    },
+    {
+      "levelIndex": 110,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-230"
+    },
+    {
+      "levelIndex": 111,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-281"
+    },
+    {
+      "levelIndex": 112,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-262"
+    },
+    {
+      "levelIndex": 113,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-233"
+    },
+    {
+      "levelIndex": 114,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-264"
+    },
+    {
+      "levelIndex": 115,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-225"
+    },
+    {
+      "levelIndex": 116,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-216"
+    },
+    {
+      "levelIndex": 117,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-57"
+    },
+    {
+      "levelIndex": 118,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-128"
+    },
+    {
+      "levelIndex": 119,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 105,
+      "seedId": "t64-level-189"
+    },
+    {
+      "levelIndex": 120,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-60"
+    },
+    {
+      "levelIndex": 121,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-231"
+    },
+    {
+      "levelIndex": 122,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-292"
+    },
+    {
+      "levelIndex": 123,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-23"
+    },
+    {
+      "levelIndex": 124,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-64"
+    },
+    {
+      "levelIndex": 125,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-175"
+    },
+    {
+      "levelIndex": 126,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-146"
+    },
+    {
+      "levelIndex": 127,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-47"
+    },
+    {
+      "levelIndex": 128,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-218"
+    },
+    {
+      "levelIndex": 129,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 105,
+      "seedId": "t64-level-29"
+    },
+    {
+      "levelIndex": 130,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-290"
+    },
+    {
+      "levelIndex": 131,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-107"
+    },
+    {
+      "levelIndex": 132,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-42"
+    },
+    {
+      "levelIndex": 133,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-103"
+    },
+    {
+      "levelIndex": 134,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 100,
+      "seedId": "t64-level-114"
+    },
+    {
+      "levelIndex": 135,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-165"
+    },
+    {
+      "levelIndex": 136,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-236"
+    },
+    {
+      "levelIndex": 137,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-237"
+    },
+    {
+      "levelIndex": 138,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-298"
+    },
+    {
+      "levelIndex": 139,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 150,
+      "seedId": "t64-level-99"
+    },
+    {
+      "levelIndex": 140,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-210"
+    },
+    {
+      "levelIndex": 141,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-241"
+    },
+    {
+      "levelIndex": 142,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-82"
+    },
+    {
+      "levelIndex": 143,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-273"
+    },
+    {
+      "levelIndex": 144,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-184"
+    },
+    {
+      "levelIndex": 145,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-295"
+    },
+    {
+      "levelIndex": 146,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-26"
+    },
+    {
+      "levelIndex": 147,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-77"
+    },
+    {
+      "levelIndex": 148,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-168"
+    },
+    {
+      "levelIndex": 149,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 165,
+      "seedId": "t64-level-139"
+    },
+    {
+      "levelIndex": 150,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-30"
+    },
+    {
+      "levelIndex": 151,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-161"
+    },
+    {
+      "levelIndex": 152,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-92"
+    },
+    {
+      "levelIndex": 153,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-123"
+    },
+    {
+      "levelIndex": 154,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-294"
+    },
+    {
+      "levelIndex": 155,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-235"
+    },
+    {
+      "levelIndex": 156,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-276"
+    },
+    {
+      "levelIndex": 157,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-97"
+    },
+    {
+      "levelIndex": 158,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-88"
+    },
+    {
+      "levelIndex": 159,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 110,
+      "seedId": "t64-level-169"
+    },
+    {
+      "levelIndex": 160,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-116"
+    },
+    {
+      "levelIndex": 161,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-291"
+    },
+    {
+      "levelIndex": 162,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-222"
+    },
+    {
+      "levelIndex": 163,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 165,
+      "seedId": "t64-level-243"
+    },
+    {
+      "levelIndex": 164,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-54"
+    },
+    {
+      "levelIndex": 165,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-85"
+    },
+    {
+      "levelIndex": 166,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-106"
+    },
+    {
+      "levelIndex": 167,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-287"
+    },
+    {
+      "levelIndex": 168,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-208"
+    },
+    {
+      "levelIndex": 169,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 150,
+      "seedId": "t64-level-269"
+    },
+    {
+      "levelIndex": 170,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-270"
+    },
+    {
+      "levelIndex": 171,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-171"
+    },
+    {
+      "levelIndex": 172,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-272"
+    },
+    {
+      "levelIndex": 173,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-163"
+    },
+    {
+      "levelIndex": 174,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-174"
+    },
+    {
+      "levelIndex": 175,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-205"
+    },
+    {
+      "levelIndex": 176,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-196"
+    },
+    {
+      "levelIndex": 177,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-177"
+    },
+    {
+      "levelIndex": 178,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-278"
+    },
+    {
+      "levelIndex": 179,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 105,
+      "seedId": "t64-level-129"
+    },
+    {
+      "levelIndex": 180,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-260"
+    },
+    {
+      "levelIndex": 181,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-91"
+    },
+    {
+      "levelIndex": 182,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-22"
+    },
+    {
+      "levelIndex": 183,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-263"
+    },
+    {
+      "levelIndex": 184,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-274"
+    },
+    {
+      "levelIndex": 185,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-125"
+    },
+    {
+      "levelIndex": 186,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-296"
+    },
+    {
+      "levelIndex": 187,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-37"
+    },
+    {
+      "levelIndex": 188,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-288"
+    },
+    {
+      "levelIndex": 189,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 90,
+      "seedId": "t64-level-109"
+    },
+    {
+      "levelIndex": 190,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-132"
+    },
+    {
+      "levelIndex": 191,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-191"
+    },
+    {
+      "levelIndex": 192,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-102"
+    },
+    {
+      "levelIndex": 193,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-173"
+    },
+    {
+      "levelIndex": 194,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 90,
+      "seedId": "t64-level-24"
+    },
+    {
+      "levelIndex": 195,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-25"
+    },
+    {
+      "levelIndex": 196,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-86"
+    },
+    {
+      "levelIndex": 197,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-297"
+    },
+    {
+      "levelIndex": 198,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-148"
+    },
+    {
+      "levelIndex": 199,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 120,
+      "seedId": "t64-level-209"
+    },
+    {
+      "levelIndex": 200,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-190"
+    },
+    {
+      "levelIndex": 201,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-141"
+    },
+    {
+      "levelIndex": 202,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 60,
+      "seedId": "t64-level-152"
+    },
+    {
+      "levelIndex": 203,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-213"
+    },
+    {
+      "levelIndex": 204,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-94"
+    },
+    {
+      "levelIndex": 205,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-285"
+    },
+    {
+      "levelIndex": 206,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-56"
+    },
+    {
+      "levelIndex": 207,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-257"
+    },
+    {
+      "levelIndex": 208,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-228"
+    },
+    {
+      "levelIndex": 209,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 150,
+      "seedId": "t64-level-259"
+    },
+    {
+      "levelIndex": 210,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-90"
+    },
+    {
+      "levelIndex": 211,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-261"
+    },
+    {
+      "levelIndex": 212,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-232"
+    },
+    {
+      "levelIndex": 213,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-293"
+    },
+    {
+      "levelIndex": 214,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-214"
+    },
+    {
+      "levelIndex": 215,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-95"
+    },
+    {
+      "levelIndex": 216,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-256"
+    },
+    {
+      "levelIndex": 217,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-197"
+    },
+    {
+      "levelIndex": 218,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-238"
+    },
+    {
+      "levelIndex": 219,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 105,
+      "seedId": "t64-level-49"
+    },
+    {
+      "levelIndex": 220,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-130"
+    },
+    {
+      "levelIndex": 221,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-41"
+    },
+    {
+      "levelIndex": 222,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-72"
+    },
+    {
+      "levelIndex": 223,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-73"
+    },
+    {
+      "levelIndex": 224,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-34"
+    },
+    {
+      "levelIndex": 225,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-255"
+    },
+    {
+      "levelIndex": 226,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-246"
+    },
+    {
+      "levelIndex": 227,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-127"
+    },
+    {
+      "levelIndex": 228,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-188"
+    },
+    {
+      "levelIndex": 229,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 150,
+      "seedId": "t64-level-279"
+    },
+    {
+      "levelIndex": 230,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-280"
+    },
+    {
+      "levelIndex": 231,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-271"
+    },
+    {
+      "levelIndex": 232,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 75,
+      "seedId": "t64-level-192"
+    },
+    {
+      "levelIndex": 233,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 135,
+      "seedId": "t64-level-133"
+    },
+    {
+      "levelIndex": 234,
+      "isHard": true,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-284"
+    },
+    {
+      "levelIndex": 235,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 120,
+      "seedId": "t64-level-45"
+    },
+    {
+      "levelIndex": 236,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 150,
+      "seedId": "t64-level-96"
+    },
+    {
+      "levelIndex": 237,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 180,
+      "seedId": "t64-level-267"
+    },
+    {
+      "levelIndex": 238,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-118"
+    },
+    {
+      "levelIndex": 239,
+      "isHard": false,
+      "isSuperHard": true,
+      "levelDuration": 120,
+      "seedId": "t64-level-159"
+    },
+    {
+      "levelIndex": 240,
+      "isHard": false,
+      "isSuperHard": false,
+      "levelDuration": 105,
+      "seedId": "t64-level-140"
+    }
+  ]
+}
