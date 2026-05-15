@@ -94,8 +94,10 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 /* Toolbar */
 #toolbar {
   padding: 8px 16px; background: var(--bg-dark); border-bottom: 1px solid var(--border);
-  display: flex; gap: 16px; align-items: center; flex-wrap: wrap; min-height: 42px;
+  display: flex; gap: 16px; align-items: center; flex-wrap: nowrap; overflow-x: auto;
+  height: 50px; min-height: 50px; flex-shrink: 0;
 }
+#toolbar::-webkit-scrollbar { height: 4px; }
 .tool-group { display: flex; align-items: center; gap: 6px; }
 .tool-group label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
 .tool-group select, .tool-group input[type=range] {
@@ -107,6 +109,84 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
   display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-dim); cursor: pointer;
 }
 .tool-toggle input { accent-color: var(--accent); }
+
+/* ─── Design Tool Palette ─── */
+.tool-palette { display: flex; gap: 4px; align-items: center; }
+.tool-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--bg-darkest); color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 8px; font-size: 11px; cursor: pointer;
+  transition: all 0.15s;
+}
+.tool-btn:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.tool-btn.active {
+  background: var(--accent); color: #fff;
+  border-color: var(--accent-bright);
+  box-shadow: 0 0 0 1px var(--accent-bright);
+}
+.tool-dot {
+  display: inline-block; width: 12px; height: 12px;
+  border-radius: 3px; flex-shrink: 0;
+  font-size: 10px; line-height: 12px; text-align: center; color: #ff7675;
+}
+
+/* ─── Modal ─── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+.modal {
+  background: var(--bg-panel); border: 1px solid var(--border-light);
+  border-radius: 10px; padding: 24px 26px; min-width: 380px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+.modal h2 {
+  font-size: 15px; font-weight: 700; color: var(--accent-bright);
+  letter-spacing: 0.5px; margin-bottom: 18px;
+}
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.modal-row label { color: var(--text-dim); font-size: 12px; }
+.modal-row input[type=number], .modal-row select {
+  background: var(--bg-darkest); color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 6px 10px; font-size: 12px; min-width: 80px;
+}
+.modal-row select { min-width: 200px; }
+.modal-preview {
+  background: var(--bg-darkest); border: 1px solid var(--border);
+  border-radius: 5px; padding: 10px; font-family: 'SF Mono', Menlo, monospace;
+  font-size: 11px; line-height: 1.1; color: var(--text-dim);
+  max-height: 240px; overflow: auto; white-space: pre;
+  text-align: center; margin: 0;
+}
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.modal-actions button {
+  background: var(--bg-darkest); color: var(--text);
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 7px 16px; font-size: 12px; cursor: pointer; transition: all 0.15s;
+}
+.modal-actions button:hover { background: var(--bg-hover); }
+.modal-actions button.primary {
+  background: var(--accent); border-color: var(--accent-bright); color: #fff;
+}
+.modal-actions button.primary:hover { background: var(--accent-bright); }
+
+/* ─── Color Swatches ─── */
+.color-swatches { display: inline-flex; gap: 3px; align-items: center; padding: 2px 4px; background: var(--bg-darkest); border: 1px solid var(--border); border-radius: 5px; }
+.color-swatch {
+  width: 18px; height: 18px; border-radius: 3px;
+  border: 2px solid transparent; cursor: pointer; padding: 0;
+  transition: all 0.1s;
+}
+.color-swatch:hover { transform: scale(1.15); }
+.color-swatch.active {
+  border-color: #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 0 6px rgba(255,255,255,0.5);
+  transform: scale(1.1);
+}
 #level-title {
   margin-left: auto; font-size: 13px; font-weight: 600; color: var(--accent-bright);
 }
@@ -278,23 +358,38 @@ canvas { image-rendering: auto; flex-shrink: 0; }
       </select>
     </div>
     <div class="tool-group" id="design-tools" style="display:none;border-left:1px solid var(--border);padding-left:8px">
-      <label style="font-size:11px;color:var(--text-dim)">放置颜色</label>
-      <select id="place-color" style="background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px 8px;border-radius:4px;font-size:11px">
-        <option value="0">Red (0)</option>
-        <option value="1">Blue (1)</option>
-        <option value="2">Yellow (2)</option>
-        <option value="3">Green (3)</option>
-        <option value="4">Purple (4)</option>
-        <option value="5">Orange (5)</option>
-        <option value="6">Pink (6)</option>
-        <option value="7">DarkBlue (7)</option>
-        <option value="8">Turquoise (8)</option>
-        <option value="9">DarkGreen (9)</option>
-      </select>
-      <label style="font-size:11px;color:var(--text-dim)">冰冻层</label>
-      <input type="number" id="place-ice" min="0" max="10" value="0" style="width:40px;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px;border-radius:4px;font-size:11px">
+      <div class="tool-palette" id="tool-palette">
+        <button class="tool-btn active" data-tool="cell"      onclick="setTool('cell',this)"     ><span class="tool-dot" style="background:linear-gradient(135deg,#22224a,#1a1a3e);border:1px solid #2e2e5a"></span>棋盘格</button>
+        <button class="tool-btn"        data-tool="wall"      onclick="setTool('wall',this)"     ><span class="tool-dot" style="background:linear-gradient(135deg,#6e6e90,#3e3e5e)"></span>外墙</button>
+        <button class="tool-btn"        data-tool="block"     onclick="setTool('block',this)"    ><span class="tool-dot tool-dot-block"></span>方块</button>
+        <button class="tool-btn"        data-tool="curtain"   onclick="setTool('curtain',this)"  ><span class="tool-dot" style="background:repeating-linear-gradient(45deg,#8b5cf680,#8b5cf680 2px,#5a3aa4 2px,#5a3aa4 4px)"></span>帘锁</button>
+        <button class="tool-btn"        data-tool="generator" onclick="setTool('generator',this)"><span class="tool-dot" style="background:radial-gradient(circle,#74b9ff,#2980b9)"></span>生成器</button>
+        <button class="tool-btn"        data-tool="door"      onclick="setTool('door',this)"     ><span class="tool-dot" style="background:#e74c3c;border:2px solid #fff"></span>出口门</button>
+        <button class="tool-btn"        data-tool="erase"     onclick="setTool('erase',this)"    ><span class="tool-dot" style="background:transparent;border:1px dashed #ff7675;position:relative">&#x2715;</span>擦除</button>
+      </div>
+      <span id="block-tool-opts" style="display:none;gap:6px;align-items:center">
+        <span class="color-swatches" id="color-swatches">
+          <button class="color-swatch active" data-color="0" style="background:#ff5253" title="Red (0)"   onclick="setColor(0,this)"></button>
+          <button class="color-swatch"        data-color="1" style="background:#54a0ff" title="Blue (1)"  onclick="setColor(1,this)"></button>
+          <button class="color-swatch"        data-color="2" style="background:#feca57" title="Yellow (2)" onclick="setColor(2,this)"></button>
+          <button class="color-swatch"        data-color="3" style="background:#1dd1a1" title="Green (3)" onclick="setColor(3,this)"></button>
+          <button class="color-swatch"        data-color="4" style="background:#9b59b6" title="Purple (4)" onclick="setColor(4,this)"></button>
+          <button class="color-swatch"        data-color="5" style="background:#ff9f43" title="Orange (5)" onclick="setColor(5,this)"></button>
+          <button class="color-swatch"        data-color="6" style="background:#e91e90" title="Pink (6)"  onclick="setColor(6,this)"></button>
+          <button class="color-swatch"        data-color="7" style="background:#2c3e80" title="DarkBlue (7)" onclick="setColor(7,this)"></button>
+          <button class="color-swatch"        data-color="8" style="background:#00cec9" title="Turquoise (8)" onclick="setColor(8,this)"></button>
+          <button class="color-swatch"        data-color="9" style="background:#00b894" title="DarkGreen (9)" onclick="setColor(9,this)"></button>
+        </span>
+        <input type="hidden" id="place-color" value="0">
+        <span id="ice-tool-opts" style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
+          <label style="font-size:11px;color:var(--text-dim)">冰冻</label>
+          <input type="number" id="place-ice" min="0" max="10" value="0" style="width:40px;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px;border-radius:4px;font-size:11px">
+        </span>
+      </span>
     </div>
     <div class="tool-group" style="margin-left:4px">
+      <button class="zoom-btn" style="width:auto;height:auto;padding:4px 10px;font-size:11px;background:var(--accent);color:#fff;border-color:var(--accent)" onclick="createBlankLevel()" title="创建空白关卡">+ 新建</button>
+      <button class="zoom-btn" style="width:auto;height:auto;padding:4px 10px;font-size:11px" onclick="cloneCurrentLevel()" title="克隆当前关卡为新的可编辑关卡">克隆</button>
       <button class="zoom-btn" style="width:auto;height:auto;padding:4px 10px;font-size:11px" onclick="exportLevel()" title="导出当前关卡JSON">导出JSON</button>
     </div>
     <span id="level-title"></span>
@@ -389,6 +484,36 @@ canvas { image-rendering: auto; flex-shrink: 0; }
 </div>
 
 <!-- Tooltip -->
+<!-- ─── NEW LEVEL MODAL ─── -->
+<div id="new-level-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this) closeNewLevelModal()">
+  <div class="modal">
+    <h2>新建空白关卡</h2>
+    <div class="modal-grid">
+      <div class="modal-row">
+        <label>宽度 (列)</label>
+        <input type="number" id="new-w" value="7" min="3" max="20" oninput="updateNewLevelPreview()">
+      </div>
+      <div class="modal-row">
+        <label>高度 (行)</label>
+        <input type="number" id="new-h" value="9" min="3" max="20" oninput="updateNewLevelPreview()">
+      </div>
+    </div>
+    <div class="modal-row">
+      <label>初始布局</label>
+      <select id="new-layout" onchange="updateNewLevelPreview()">
+        <option value="walled" selected>外墙围边 + 棋盘格</option>
+        <option value="cells-only">仅棋盘格</option>
+      </select>
+    </div>
+    <div style="font-size:11px;color:var(--text-dim);margin-top:8px;margin-bottom:4px">预览</div>
+    <pre class="modal-preview" id="new-preview"></pre>
+    <div class="modal-actions">
+      <button onclick="closeNewLevelModal()">取消</button>
+      <button class="primary" onclick="confirmNewLevel()">创建</button>
+    </div>
+  </div>
+</div>
+
 <div id="tooltip"></div>
 <!-- Violation toast -->
 <div id="violation-toast"></div>
@@ -1882,71 +2007,335 @@ document.addEventListener('keydown', (e) => {
 // ═══════════════════════════════════════════
 let editMode = 'play'; // 'play' | 'design'
 
+let activeTool = 'cell';
+
 function switchEditMode(mode) {
   editMode = mode;
   document.getElementById('design-tools').style.display = mode === 'design' ? 'flex' : 'none';
   wrap.style.cursor = mode === 'design' ? 'crosshair' : 'default';
   selectedElement = null;
+  if (mode === 'design') setTool(activeTool);
   renderLevel();
   updateInfoPanel();
   updateSelectionPanel();
 }
 
-// Design mode: click empty cell to place a block
+function setTool(tool, btnEl) {
+  activeTool = tool;
+  // Update button highlight
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
+  // Color picker is used for blocks and doors; ice only for blocks
+  const showColor = tool === 'block' || tool === 'door';
+  document.getElementById('block-tool-opts').style.display = showColor ? 'inline-flex' : 'none';
+  document.getElementById('ice-tool-opts').style.display = tool === 'block' ? 'inline-flex' : 'none';
+  selectedElement = null;
+  renderLevel();
+  updateSelectionPanel();
+}
+
+function setColor(c, btnEl) {
+  document.getElementById('place-color').value = String(c);
+  document.querySelectorAll('.color-swatch').forEach(b => b.classList.toggle('active', parseInt(b.dataset.color) === c));
+}
+
+// Clone the current level into a new custom level for editing
+function cloneCurrentLevel() {
+  if (!currentLevel) { showViolation('先选一个关卡再克隆'); return; }
+  const sourceId = currentLevelId || 'level';
+  const cloned = JSON.parse(JSON.stringify(currentLevel)); // deep copy
+  const seedId = `custom-${sourceId}-${Date.now().toString().slice(-5)}`;
+  currentLevel = cloned;
+  currentLevelId = seedId;
+  selectedElement = null;
+  modified = true;
+  // Re-init door runtime states from cloned data
+  doorStates = {};
+  (currentLevel.DMS || []).forEach((dm, i) => {
+    doorStates[i] = {
+      iceRemaining: dm.DIC || 0,
+      starSatisfied: !dm.DHS,
+      turnState: (dm.TBD > 0) ? 'closed' : 'open',
+    };
+  });
+
+  document.getElementById('edit-mode').value = 'design';
+  switchEditMode('design');
+  setTool('cell');
+
+  document.getElementById('level-title').textContent = `克隆自 ${sourceId}`;
+  document.querySelectorAll('.level-item').forEach(item => item.classList.remove('active'));
+  updateInfoPanel();
+  updateJsonPanel();
+  zoomFit();
+}
+
+// ─── New-level modal ──────────────────────────────────────────────
+function createBlankLevel() {
+  document.getElementById('new-level-modal').style.display = 'flex';
+  updateNewLevelPreview();
+}
+function closeNewLevelModal() {
+  document.getElementById('new-level-modal').style.display = 'none';
+}
+function clampInt(id, min, max) {
+  let v = parseInt(document.getElementById(id).value);
+  if (isNaN(v)) v = min;
+  v = Math.max(min, Math.min(max, v));
+  document.getElementById(id).value = v;
+  return v;
+}
+function generateLayout(w, h, layout) {
+  // Returns a map: "x,y" -> 'wall' | 'cell' | 'empty'
+  const grid = {};
+  for (let x = 0; x < w; x++) {
+    for (let y = 0; y < h; y++) {
+      const isBorder = x === 0 || x === w - 1 || y === 0 || y === h - 1;
+      let kind = 'empty';
+      if (layout === 'walled')        kind = isBorder ? 'wall' : 'cell';
+      else if (layout === 'cells-only') kind = 'cell';
+      grid[`${x},${y}`] = kind;
+    }
+  }
+  return grid;
+}
+function updateNewLevelPreview() {
+  const w = clampInt('new-w', 3, 20);
+  const h = clampInt('new-h', 3, 20);
+  const layout = document.getElementById('new-layout').value;
+  const grid = generateLayout(w, h, layout);
+  let txt = '';
+  for (let y = h - 1; y >= 0; y--) {
+    for (let x = 0; x < w; x++) {
+      const k = grid[`${x},${y}`];
+      txt += k === 'wall' ? '▮ ' : k === 'cell' ? '· ' : '  ';
+    }
+    txt += '\n';
+  }
+  document.getElementById('new-preview').textContent = txt;
+}
+function confirmNewLevel() {
+  const w = clampInt('new-w', 3, 20);
+  const h = clampInt('new-h', 3, 20);
+  const layout = document.getElementById('new-layout').value;
+  const grid = generateLayout(w, h, layout);
+
+  const cms = [], wms = [];
+  for (let x = 0; x < w; x++) {
+    for (let y = 0; y < h; y++) {
+      const k = grid[`${x},${y}`];
+      if (k === 'cell') cms.push({ "$type": "CM", "BPM": { "$type": "BPM", x, y } });
+      else if (k === 'wall') wms.push({ "$type": "WM", "BPM": { "$type": "BPM", x, y }, "BI": 1 });
+    }
+  }
+
+  const seedId = 'custom-' + Date.now();
+  currentLevel = {
+    "$type": "LM",
+    "BMS": [], "DMS": [], "WMS": wms, "CMS": cms,
+    "IWMS": [], "GMS": [], "EMS": [], "CLMS": [],
+    "BSP": []
+  };
+  currentLevelId = seedId;
+  selectedElement = null;
+  modified = true;
+  doorStates = {};
+
+  closeNewLevelModal();
+  document.getElementById('edit-mode').value = 'design';
+  switchEditMode('design');
+  setTool('cell');
+
+  document.getElementById('level-title').textContent = `新建 ${w}×${h}`;
+  document.querySelectorAll('.level-item').forEach(item => item.classList.remove('active'));
+  updateInfoPanel();
+  updateJsonPanel();
+  zoomFit();
+}
+
+// Esc to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('new-level-modal').style.display === 'flex') {
+    closeNewLevelModal();
+  }
+});
+
+// Design mode: dispatch click to the active tool
 function handleDesignClick(e) {
   if (editMode !== 'design' || !currentLevel) return false;
   const { gridX, gridY } = mouseToGrid(e);
-  const key = `${gridX},${gridY}`;
-
-  // Check it's a valid cell
-  const isCell = (currentLevel.CMS||[]).some(c => c.BPM.x === gridX && c.BPM.y === gridY);
-  if (!isCell) { showViolation('只能在棋盘格上放置方块'); return true; }
-
-  // Check not on a wall
-  const isWall = (currentLevel.WMS||[]).some(w => w.BPM.x === gridX && w.BPM.y === gridY);
-  if (isWall) { showViolation('不能放在外墙上'); return true; }
-
-  // Check not already occupied by another block
-  const existingBlock = (currentLevel.BMS||[]).findIndex(bm =>
-    (bm.BPMS||[]).some(p => p.x === gridX && p.y === gridY)
-  );
-
-  if (existingBlock >= 0) {
-    // Click on existing block -> select it for editing
-    selectedElement = { type: 'block', index: existingBlock };
-    renderLevel();
-    updateInfoPanel();
-    updateSelectionPanel();
-    return true;
+  const tool = activeTool;
+  switch (tool) {
+    case 'cell':      return paintCell(gridX, gridY);
+    case 'wall':      return paintWall(gridX, gridY);
+    case 'curtain':   return paintCurtain(gridX, gridY);
+    case 'generator': return paintGenerator(gridX, gridY);
+    case 'door':      return paintDoor(gridX, gridY);
+    case 'erase':     return eraseAt(gridX, gridY);
+    default:          return paintBlock(gridX, gridY);
   }
+}
 
-  // Place new single-cell block
-  const bct = parseInt(document.getElementById('place-color').value);
-  const ice = parseInt(document.getElementById('place-ice').value) || 0;
-  const newBlock = {
-    "$type": "BM",
-    "BCT": bct,
-    "BPMS": [{ "$type": "BPM", "x": gridX, "y": gridY }],
-    "BIC": ice,  // BIC doubles as ice/freeze count for initial placement
-    "BAD": 0,
-    "KID": 0,
-    "LID": ice > 0 ? 1 : 0,  // Layer ID for ice blocks
-    "BHS": false,
-    "BD": ice,   // Block Damage = ice layer count
-    "ILE": false,
-    "LBCT": 0
-  };
-
-  if (!currentLevel.BMS) currentLevel.BMS = [];
-  currentLevel.BMS.push(newBlock);
+function afterPaint() {
   modified = true;
-
-  // Select the new block
-  selectedElement = { type: 'block', index: currentLevel.BMS.length - 1 };
+  const prevW = canvas.width, prevH = canvas.height;
   renderLevel();
+  // If the bounds grew/shrank, the canvas would visually jump under fixed zoom.
+  // Re-fit only in that case; otherwise preserve the user's current zoom.
+  if (canvas.width !== prevW || canvas.height !== prevH) zoomFit();
   updateInfoPanel();
   updateSelectionPanel();
   updateJsonPanel();
+}
+
+// cell / wall / door are mutually exclusive at the same position
+function clearTerrainAt(x, y) {
+  const removeFrom = (key, hasBPMS) => {
+    if (!currentLevel[key]) return;
+    for (let i = currentLevel[key].length - 1; i >= 0; i--) {
+      const it = currentLevel[key][i];
+      const hit = hasBPMS
+        ? (it.BPMS||[]).some(p => p.x === x && p.y === y)
+        : (it.BPM && it.BPM.x === x && it.BPM.y === y);
+      if (hit) currentLevel[key].splice(i, 1);
+    }
+  };
+  removeFrom('CMS', false);
+  removeFrom('WMS', false);
+  removeFrom('DMS', true);
+}
+
+function paintCell(x, y) {
+  if (!currentLevel.CMS) currentLevel.CMS = [];
+  const idx = currentLevel.CMS.findIndex(c => c.BPM.x === x && c.BPM.y === y);
+  if (idx >= 0) {
+    currentLevel.CMS.splice(idx, 1); // toggle off
+  } else {
+    clearTerrainAt(x, y);
+    currentLevel.CMS.push({ "$type": "CM", "BPM": { "$type": "BPM", x, y } });
+  }
+  afterPaint();
+  return true;
+}
+
+function paintWall(x, y) {
+  if (!currentLevel.WMS) currentLevel.WMS = [];
+  const idx = currentLevel.WMS.findIndex(w => w.BPM.x === x && w.BPM.y === y);
+  if (idx >= 0) {
+    currentLevel.WMS.splice(idx, 1);
+  } else {
+    clearTerrainAt(x, y);
+    currentLevel.WMS.push({ "$type": "WM", "BPM": { "$type": "BPM", x, y }, "BI": 1 });
+  }
+  afterPaint();
+  return true;
+}
+
+function paintBlock(x, y) {
+  const isCell = (currentLevel.CMS||[]).some(c => c.BPM.x === x && c.BPM.y === y);
+  if (!isCell) { showViolation('需要先用"棋盘格"工具铺底'); return true; }
+  const isWall = (currentLevel.WMS||[]).some(w => w.BPM.x === x && w.BPM.y === y);
+  if (isWall) { showViolation('不能放在外墙上'); return true; }
+
+  const existingBlock = (currentLevel.BMS||[]).findIndex(bm =>
+    (bm.BPMS||[]).some(p => p.x === x && p.y === y)
+  );
+  if (existingBlock >= 0) {
+    selectedElement = { type: 'block', index: existingBlock };
+    renderLevel(); updateInfoPanel(); updateSelectionPanel();
+    return true;
+  }
+
+  const bct = parseInt(document.getElementById('place-color').value);
+  const ice = parseInt(document.getElementById('place-ice').value) || 0;
+  if (!currentLevel.BMS) currentLevel.BMS = [];
+  currentLevel.BMS.push({
+    "$type": "BM", "BCT": bct,
+    "BPMS": [{ "$type": "BPM", x, y }],
+    "BIC": ice, "BAD": 0, "KID": 0,
+    "LID": ice > 0 ? 1 : 0,
+    "BHS": false, "BD": ice, "ILE": false, "LBCT": 0
+  });
+  selectedElement = { type: 'block', index: currentLevel.BMS.length - 1 };
+  afterPaint();
+  return true;
+}
+
+function paintCurtain(x, y) {
+  if (!currentLevel.CLMS) currentLevel.CLMS = [];
+  const idx = currentLevel.CLMS.findIndex(cl => (cl.BPMS||[]).some(p => p.x === x && p.y === y));
+  if (idx >= 0) {
+    currentLevel.CLMS.splice(idx, 1);
+  } else {
+    currentLevel.CLMS.push({
+      "$type": "CLM",
+      "BPMS": [{ "$type": "BPM", x, y }],
+      "CLC": 1
+    });
+  }
+  afterPaint();
+  return true;
+}
+
+function paintGenerator(x, y) {
+  if (!currentLevel.GMS) currentLevel.GMS = [];
+  const idx = currentLevel.GMS.findIndex(g => g.BPM && g.BPM.x === x && g.BPM.y === y);
+  if (idx >= 0) {
+    currentLevel.GMS.splice(idx, 1);
+  } else {
+    currentLevel.GMS.push({
+      "$type": "GM",
+      "BPM": { "$type": "BPM", x, y },
+      "IH": false, "GBMS": []
+    });
+  }
+  afterPaint();
+  return true;
+}
+
+function paintDoor(x, y) {
+  if (!currentLevel.DMS) currentLevel.DMS = [];
+  const idx = currentLevel.DMS.findIndex(d => (d.BPMS||[]).some(p => p.x === x && p.y === y));
+  if (idx >= 0) {
+    currentLevel.DMS.splice(idx, 1);
+  } else {
+    clearTerrainAt(x, y); // removes any cell/wall/door at this spot
+    const bct = parseInt(document.getElementById('place-color').value);
+    currentLevel.DMS.push({
+      "$type": "DM", "BCT": bct,
+      "BPMS": [{ "$type": "BPM", x, y }],
+      "IH": true, "BI": 1, "DIC": 0, "TBD": 0, "DHS": false
+    });
+    const newIdx = currentLevel.DMS.length - 1;
+    doorStates[newIdx] = { iceRemaining: 0, starSatisfied: true, turnState: 'open' };
+  }
+  afterPaint();
+  return true;
+}
+
+function eraseAt(x, y) {
+  const matchPos = (p) => p.x === x && p.y === y;
+  const eraseFromList = (key, hasBPMS) => {
+    if (!currentLevel[key]) return false;
+    let any = false;
+    for (let i = currentLevel[key].length - 1; i >= 0; i--) {
+      const it = currentLevel[key][i];
+      const hit = hasBPMS
+        ? (it.BPMS||[]).some(matchPos)
+        : (it.BPM && matchPos(it.BPM));
+      if (hit) { currentLevel[key].splice(i, 1); any = true; }
+    }
+    return any;
+  };
+  // Erase order: top-most visual layers first
+  eraseFromList('BMS',  true);
+  eraseFromList('DMS',  true);
+  eraseFromList('EMS',  true);
+  eraseFromList('CLMS', true);
+  eraseFromList('GMS',  false);
+  eraseFromList('WMS',  false);
+  eraseFromList('CMS',  false);
+  selectedElement = null;
+  afterPaint();
   return true;
 }
 
