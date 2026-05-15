@@ -34,18 +34,18 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 
 /* ─── Sidebar ─── */
 #sidebar {
-  width: 300px; background: var(--bg-dark); border-right: 1px solid var(--border);
+  width: 240px; background: var(--bg-dark); border-right: 1px solid var(--border);
   display: flex; flex-direction: column; flex-shrink: 0;
 }
 .sidebar-header {
-  padding: 20px 20px 12px; background: linear-gradient(135deg, var(--bg-panel), var(--bg-dark));
+  padding: 14px 14px 10px; background: linear-gradient(135deg, var(--bg-panel), var(--bg-dark));
   border-bottom: 1px solid var(--border);
 }
 .sidebar-header h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; color: var(--accent-bright); }
 .sidebar-header p { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
 .search-wrap {
-  padding: 10px 12px; border-bottom: 1px solid var(--border);
-  display: flex; gap: 6px; align-items: center;
+  padding: 8px 10px; border-bottom: 1px solid var(--border);
+  display: flex; gap: 5px; align-items: center;
 }
 #search {
   flex: 1; padding: 7px 10px; background: var(--bg-darkest); border: 1px solid var(--border);
@@ -61,9 +61,9 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 
 #level-list { flex: 1; overflow-y: auto; }
 .level-item {
-  padding: 10px 16px; cursor: pointer; border-bottom: 1px solid var(--border);
+  padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--border);
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 12px; transition: background .12s;
+  font-size: 11px; transition: background .12s;
 }
 .level-item:hover { background: var(--bg-hover); }
 .level-item.active { background: var(--accent); border-color: var(--accent); }
@@ -82,7 +82,7 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 }
 
 #stats-bar {
-  padding: 10px 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-dim);
+  padding: 8px 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-dim);
   display: flex; gap: 12px; background: var(--bg-panel);
 }
 .stat-chip { display: flex; align-items: center; gap: 4px; }
@@ -93,11 +93,42 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 
 /* Toolbar */
 #toolbar {
-  padding: 8px 16px; background: var(--bg-dark); border-bottom: 1px solid var(--border);
-  display: flex; gap: 16px; align-items: center; flex-wrap: nowrap; overflow-x: auto;
-  height: 50px; min-height: 50px; flex-shrink: 0;
+  background: var(--bg-dark); border-bottom: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0;
 }
-#toolbar::-webkit-scrollbar { height: 4px; }
+.tb-row { display: flex; align-items: center; padding: 0 14px; }
+.tb-main {
+  height: 42px; min-height: 42px; border-bottom: 1px solid var(--border);
+  justify-content: space-between; gap: 12px;
+}
+.tb-tools {
+  height: 40px; min-height: 40px; gap: 12px; overflow-x: auto;
+}
+.tb-tools::-webkit-scrollbar { height: 4px; }
+
+/* Mode toggle pills */
+.mode-toggle { display: flex; gap: 0; background: var(--bg-darkest); border-radius: 6px; border: 1px solid var(--border); overflow: hidden; }
+.mode-btn {
+  padding: 5px 14px; font-size: 11px; font-weight: 600; cursor: pointer;
+  background: transparent; color: var(--text-dim); border: none; transition: all .15s;
+  white-space: nowrap;
+}
+.mode-btn:hover { color: var(--text); }
+.mode-btn.active { background: var(--accent); color: #fff; }
+
+/* Toolbar action buttons */
+.tb-actions { display: flex; gap: 5px; }
+.tb-action-btn {
+  padding: 4px 12px; font-size: 11px; font-weight: 500; cursor: pointer;
+  background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+  border-radius: 5px; transition: all .15s; white-space: nowrap;
+}
+.tb-action-btn:hover { background: var(--bg-hover); border-color: var(--border-light); }
+.tb-action-btn.primary { background: var(--accent); border-color: var(--accent-bright); color: #fff; }
+.tb-action-btn.primary:hover { background: var(--accent-bright); }
+
+/* Toolbar toggles */
+.tb-toggles { display: flex; gap: 8px; align-items: center; }
 .tool-group { display: flex; align-items: center; gap: 6px; }
 .tool-group label { font-size: 11px; color: var(--text-dim); white-space: nowrap; }
 .tool-group select, .tool-group input[type=range] {
@@ -113,10 +144,10 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 /* ─── Design Tool Palette ─── */
 .tool-palette { display: flex; gap: 4px; align-items: center; }
 .tool-btn {
-  display: inline-flex; align-items: center; gap: 5px;
+  display: inline-flex; align-items: center; gap: 4px;
   background: var(--bg-darkest); color: var(--text);
   border: 1px solid var(--border); border-radius: 5px;
-  padding: 4px 8px; font-size: 11px; cursor: pointer;
+  padding: 3px 6px; font-size: 10px; cursor: pointer;
   transition: all 0.15s;
 }
 .tool-btn:hover { background: var(--bg-hover); border-color: var(--border-light); }
@@ -177,7 +208,7 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 /* ─── Color Swatches ─── */
 .color-swatches { display: inline-flex; gap: 3px; align-items: center; padding: 2px 4px; background: var(--bg-darkest); border: 1px solid var(--border); border-radius: 5px; }
 .color-swatch {
-  width: 18px; height: 18px; border-radius: 3px;
+  width: 20px; height: 20px; border-radius: 3px;
   border: 2px solid transparent; cursor: pointer; padding: 0;
   transition: all 0.1s;
 }
@@ -188,7 +219,7 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
   transform: scale(1.1);
 }
 #level-title {
-  margin-left: auto; font-size: 13px; font-weight: 600; color: var(--accent-bright);
+  font-size: 13px; font-weight: 600; color: var(--accent-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;
 }
 
 /* Canvas area */
@@ -204,7 +235,7 @@ body { font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif; background
 
 /* Violation toast */
 #violation-toast {
-  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+  position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
   background: rgba(255,118,117,0.95); color: #fff; padding: 10px 24px;
   border-radius: 8px; font-size: 13px; font-weight: 600; z-index: 200;
   box-shadow: 0 4px 20px rgba(255,0,0,0.3); pointer-events: none;
@@ -228,7 +259,7 @@ canvas { image-rendering: auto; flex-shrink: 0; }
 
 /* ─── Right Panel ─── */
 #right-panel {
-  width: 320px; background: var(--bg-dark); border-left: 1px solid var(--border);
+  width: 280px; background: var(--bg-dark); border-left: 1px solid var(--border);
   display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden;
 }
 .panel-tabs {
@@ -250,7 +281,7 @@ canvas { image-rendering: auto; flex-shrink: 0; }
   background: var(--bg-card); border-radius: 6px; padding: 10px 12px;
   border: 1px solid var(--border);
 }
-.info-card .ic-value { font-size: 20px; font-weight: 700; color: var(--accent-bright); }
+.info-card .ic-value { font-size: 16px; font-weight: 700; color: var(--accent-bright); }
 .info-card .ic-label { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
 .info-card.wide { grid-column: 1 / -1; }
 
@@ -332,69 +363,75 @@ canvas { image-rendering: auto; flex-shrink: 0; }
 <!-- ─── MAIN ─── -->
 <div id="main">
   <div id="toolbar">
-    <div class="tool-group">
-      <label>Size</label>
-      <input type="range" id="cell-size" min="24" max="80" value="44" style="width:80px">
-    </div>
-    <div class="tool-group">
-      <label>Layer</label>
-      <select id="show-layer">
-        <option value="all">全部</option>
-        <option value="cells">棋盘格</option>
-        <option value="blocks">方块</option>
-        <option value="walls">外墙</option>
-        <option value="doors">出口门</option>
-        <option value="special">特殊(升降梯/生成器/帘锁)</option>
-      </select>
-    </div>
-    <label class="tool-toggle"><input type="checkbox" id="show-coords" checked> 坐标</label>
-    <label class="tool-toggle"><input type="checkbox" id="show-labels" checked> 标注</label>
-    <label class="tool-toggle"><input type="checkbox" id="show-grid" checked> 网格</label>
-    <div class="tool-group" style="margin-left:8px;border-left:1px solid var(--border);padding-left:8px">
-      <label style="font-size:11px;color:var(--text-dim)">模式</label>
-      <select id="edit-mode" onchange="switchEditMode(this.value)" style="background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px 8px;border-radius:4px;font-size:11px">
-        <option value="play">游戏模式</option>
-        <option value="design">设计模式</option>
-      </select>
-    </div>
-    <div class="tool-group" id="design-tools" style="display:none;border-left:1px solid var(--border);padding-left:8px">
-      <div class="tool-palette" id="tool-palette">
-        <button class="tool-btn active" data-tool="cell"      onclick="setTool('cell',this)"     ><span class="tool-dot" style="background:linear-gradient(135deg,#22224a,#1a1a3e);border:1px solid #2e2e5a"></span>棋盘格</button>
-        <button class="tool-btn"        data-tool="wall"      onclick="setTool('wall',this)"     ><span class="tool-dot" style="background:linear-gradient(135deg,#6e6e90,#3e3e5e)"></span>外墙</button>
-        <button class="tool-btn"        data-tool="block"     onclick="setTool('block',this)"    ><span class="tool-dot tool-dot-block"></span>方块</button>
-        <button class="tool-btn"        data-tool="curtain"   onclick="setTool('curtain',this)"  ><span class="tool-dot" style="background:repeating-linear-gradient(45deg,#8b5cf680,#8b5cf680 2px,#5a3aa4 2px,#5a3aa4 4px)"></span>帘锁</button>
-        <button class="tool-btn"        data-tool="generator" onclick="setTool('generator',this)"><span class="tool-dot" style="background:radial-gradient(circle,#74b9ff,#2980b9)"></span>生成器</button>
-        <button class="tool-btn"        data-tool="door"      onclick="setTool('door',this)"     ><span class="tool-dot" style="background:#e74c3c;border:2px solid #fff"></span>出口门</button>
-        <button class="tool-btn"        data-tool="colorcell" onclick="setTool('colorcell',this)" ><span class="tool-dot" style="background:linear-gradient(135deg,#00b894,#00cec9);border:1px solid rgba(255,255,255,.3)"></span>连通格</button>
-        <button class="tool-btn"        data-tool="grinder"   onclick="setTool('grinder',this)"  ><span class="tool-dot" style="background:radial-gradient(circle,#ffa500,#e67e22)"></span>研磨器</button>
-        <button class="tool-btn"        data-tool="erase"     onclick="setTool('erase',this)"    ><span class="tool-dot" style="background:transparent;border:1px dashed #ff7675;position:relative">&#x2715;</span>擦除</button>
+    <!-- Row 1: title, mode toggle, actions -->
+    <div class="tb-row tb-main">
+      <span id="level-title"></span>
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="play" onclick="switchEditMode('play')">游戏模式</button>
+        <button class="mode-btn" data-mode="design" onclick="switchEditMode('design')">设计模式</button>
       </div>
-      <span id="block-tool-opts" style="display:none;gap:6px;align-items:center">
-        <span class="color-swatches" id="color-swatches">
-          <button class="color-swatch active" data-color="0" style="background:#ff5253" title="Red (0)"   onclick="setColor(0,this)"></button>
-          <button class="color-swatch"        data-color="1" style="background:#54a0ff" title="Blue (1)"  onclick="setColor(1,this)"></button>
-          <button class="color-swatch"        data-color="2" style="background:#feca57" title="Yellow (2)" onclick="setColor(2,this)"></button>
-          <button class="color-swatch"        data-color="3" style="background:#1dd1a1" title="Green (3)" onclick="setColor(3,this)"></button>
-          <button class="color-swatch"        data-color="4" style="background:#9b59b6" title="Purple (4)" onclick="setColor(4,this)"></button>
-          <button class="color-swatch"        data-color="5" style="background:#ff9f43" title="Orange (5)" onclick="setColor(5,this)"></button>
-          <button class="color-swatch"        data-color="6" style="background:#e91e90" title="Pink (6)"  onclick="setColor(6,this)"></button>
-          <button class="color-swatch"        data-color="7" style="background:#2c3e80" title="DarkBlue (7)" onclick="setColor(7,this)"></button>
-          <button class="color-swatch"        data-color="8" style="background:#00cec9" title="Turquoise (8)" onclick="setColor(8,this)"></button>
-          <button class="color-swatch"        data-color="9" style="background:#00b894" title="DarkGreen (9)" onclick="setColor(9,this)"></button>
-        </span>
-        <input type="hidden" id="place-color" value="0">
-        <span id="ice-tool-opts" style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
-          <label style="font-size:11px;color:var(--text-dim)">冰冻</label>
-          <input type="number" id="place-ice" min="0" max="10" value="0" style="width:40px;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px;border-radius:4px;font-size:11px">
-        </span>
-      </span>
+      <div class="tb-actions">
+        <button class="tb-action-btn primary" onclick="createBlankLevel()" title="创建空白关卡">+ 新建</button>
+        <button class="tb-action-btn" onclick="cloneCurrentLevel()" title="克隆当前关卡为新的可编辑关卡">克隆</button>
+        <button class="tb-action-btn" onclick="exportLevel()" title="导出当前关卡JSON">导出</button>
+      </div>
     </div>
-    <div class="tool-group" style="margin-left:4px">
-      <button class="zoom-btn" style="width:auto;height:auto;padding:4px 10px;font-size:11px;background:var(--accent);color:#fff;border-color:var(--accent)" onclick="createBlankLevel()" title="创建空白关卡">+ 新建</button>
-      <button class="zoom-btn" style="width:auto;height:auto;padding:4px 10px;font-size:11px" onclick="cloneCurrentLevel()" title="克隆当前关卡为新的可编辑关卡">克隆</button>
-      <button class="zoom-btn" style="width:auto;height:auto;padding:4px 10px;font-size:11px" onclick="exportLevel()" title="导出当前关卡JSON">导出JSON</button>
+    <!-- Row 2: contextual tools -->
+    <div class="tb-row tb-tools">
+      <div class="tool-group">
+        <label>Size</label>
+        <input type="range" id="cell-size" min="24" max="80" value="44" style="width:70px">
+      </div>
+      <div class="tool-group">
+        <label>Layer</label>
+        <select id="show-layer">
+          <option value="all">全部</option>
+          <option value="cells">棋盘格</option>
+          <option value="blocks">方块</option>
+          <option value="walls">外墙</option>
+          <option value="doors">出口门</option>
+          <option value="special">特殊(升降梯/生成器/帘锁)</option>
+        </select>
+      </div>
+      <div class="tb-toggles">
+        <label class="tool-toggle"><input type="checkbox" id="show-coords" checked> 坐标</label>
+        <label class="tool-toggle"><input type="checkbox" id="show-labels" checked> 标注</label>
+        <label class="tool-toggle"><input type="checkbox" id="show-grid" checked> 网格</label>
+      </div>
+      <!-- Design tools (shown only in design mode) -->
+      <div class="tool-group" id="design-tools" style="display:none;border-left:1px solid var(--border);padding-left:8px">
+        <div class="tool-palette" id="tool-palette">
+          <button class="tool-btn active" data-tool="cell"      onclick="setTool('cell',this)"     ><span class="tool-dot" style="background:linear-gradient(135deg,#22224a,#1a1a3e);border:1px solid #2e2e5a"></span>棋盘格</button>
+          <button class="tool-btn"        data-tool="wall"      onclick="setTool('wall',this)"     ><span class="tool-dot" style="background:linear-gradient(135deg,#6e6e90,#3e3e5e)"></span>外墙</button>
+          <button class="tool-btn"        data-tool="block"     onclick="setTool('block',this)"    ><span class="tool-dot tool-dot-block"></span>方块</button>
+          <button class="tool-btn"        data-tool="curtain"   onclick="setTool('curtain',this)"  ><span class="tool-dot" style="background:repeating-linear-gradient(45deg,#8b5cf680,#8b5cf680 2px,#5a3aa4 2px,#5a3aa4 4px)"></span>帘锁</button>
+          <button class="tool-btn"        data-tool="generator" onclick="setTool('generator',this)"><span class="tool-dot" style="background:radial-gradient(circle,#74b9ff,#2980b9)"></span>生成器</button>
+          <button class="tool-btn"        data-tool="door"      onclick="setTool('door',this)"     ><span class="tool-dot" style="background:#e74c3c;border:2px solid #fff"></span>出口门</button>
+          <button class="tool-btn"        data-tool="colorcell" onclick="setTool('colorcell',this)" ><span class="tool-dot" style="background:linear-gradient(135deg,#00b894,#00cec9);border:1px solid rgba(255,255,255,.3)"></span>连通格</button>
+          <button class="tool-btn"        data-tool="grinder"   onclick="setTool('grinder',this)"  ><span class="tool-dot" style="background:radial-gradient(circle,#ffa500,#e67e22)"></span>研磨器</button>
+          <button class="tool-btn"        data-tool="erase"     onclick="setTool('erase',this)"    ><span class="tool-dot" style="background:transparent;border:1px dashed #ff7675;position:relative">&#x2715;</span>擦除</button>
+        </div>
+        <span id="block-tool-opts" style="display:none;gap:6px;align-items:center">
+          <span class="color-swatches" id="color-swatches">
+            <button class="color-swatch active" data-color="0" style="background:#ff5253" title="Red (0)"   onclick="setColor(0,this)"></button>
+            <button class="color-swatch"        data-color="1" style="background:#54a0ff" title="Blue (1)"  onclick="setColor(1,this)"></button>
+            <button class="color-swatch"        data-color="2" style="background:#feca57" title="Yellow (2)" onclick="setColor(2,this)"></button>
+            <button class="color-swatch"        data-color="3" style="background:#1dd1a1" title="Green (3)" onclick="setColor(3,this)"></button>
+            <button class="color-swatch"        data-color="4" style="background:#9b59b6" title="Purple (4)" onclick="setColor(4,this)"></button>
+            <button class="color-swatch"        data-color="5" style="background:#ff9f43" title="Orange (5)" onclick="setColor(5,this)"></button>
+            <button class="color-swatch"        data-color="6" style="background:#e91e90" title="Pink (6)"  onclick="setColor(6,this)"></button>
+            <button class="color-swatch"        data-color="7" style="background:#2c3e80" title="DarkBlue (7)" onclick="setColor(7,this)"></button>
+            <button class="color-swatch"        data-color="8" style="background:#00cec9" title="Turquoise (8)" onclick="setColor(8,this)"></button>
+            <button class="color-swatch"        data-color="9" style="background:#00b894" title="DarkGreen (9)" onclick="setColor(9,this)"></button>
+          </span>
+          <input type="hidden" id="place-color" value="0">
+          <span id="ice-tool-opts" style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
+            <label style="font-size:11px;color:var(--text-dim)">冰冻</label>
+            <input type="number" id="place-ice" min="0" max="10" value="0" style="width:40px;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px;border-radius:4px;font-size:11px">
+          </span>
+        </span>
+      </div>
     </div>
-    <span id="level-title"></span>
   </div>
 
   <div id="canvas-area">
@@ -1169,7 +1206,8 @@ function setupPanZoom() {
     moveTarget = null;
 
     // Click (no drag) -> select or design-place
-    if (!dragMoved && currentLevel) {
+    // Only process if the mousedown originated on the canvas wrap (not toolbar buttons etc.)
+    if (!dragMoved && currentLevel && wasDragMode === 'pending') {
       // Design mode: place block
       if (editMode === 'design') {
         handleDesignClick(e);
@@ -1762,11 +1800,29 @@ function drawBlock(bm, gx, gy, alpha) {
     }
   });
 
+  // BIC number badge on first cell (always visible, like door DIC)
+  if (bm.BIC > 0 && positions.length > 0) {
+    const p = positions[0];
+    const px = gx(p.x), py = gy(p.y);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    const badgeSize = Math.max(16, cs * 0.4);
+    ctx.beginPath();
+    ctx.arc(px + cs/2, py + cs/2, badgeSize/2, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = darken(color, 0.3);
+    ctx.font = `bold ${Math.max(11, cs*0.3)}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(bm.BIC), px + cs/2, py + cs/2);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
   // Block labels on first cell
   if (showLabels && positions.length > 0) {
     const p = positions[0];
     const parts = [];
-    if (bm.BIC > 0) parts.push(`×${bm.BIC}`);
     if (bm.BAD > 0) parts.push(bm.BAD === 1 ? 'H' : 'V');
     if (bm.KID > 0) parts.push(`K${bm.KID}`);
     if (bm.BHS) parts.push('T');
@@ -1888,7 +1944,10 @@ function updateSelectionPanel() {
         <label class="tool-toggle" style="font-size:10px"><input type="checkbox" ${bm.BHS?'checked':''} onchange="editProp('block',${s.index},'BHS',this.checked)"> 高方块(BHS)</label>
         <label class="tool-toggle" style="font-size:10px"><input type="checkbox" ${bm.ILE?'checked':''} onchange="editProp('block',${s.index},'ILE',this.checked)"> 可爆炸(ILE)</label>
       </div>
-      <div style="margin-top:6px;font-size:10px;color:var(--text-dim)">占格: ${(bm.BPMS||[]).map(p=>`(${p.x},${p.y})`).join(' ')}</div>
+      <div style="margin-top:6px;font-size:10px;color:var(--text-dim)">
+        占格 (${(bm.BPMS||[]).length}格): ${(bm.BPMS||[]).map((p,pi)=>`<span style="cursor:pointer;text-decoration:underline dotted" title="点击移除此格" onclick="removeCellFromElement('block',${s.index},${pi})">(${p.x},${p.y})</span>`).join(' ')}
+      </div>
+      <div style="margin-top:4px;font-size:10px;color:var(--accent-bright)">💡 Shift+点击相邻格子可扩展此方块</div>
       <button onclick="deleteSelected()" style="margin-top:8px;padding:4px 12px;background:var(--danger);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px">删除此方块</button>
     `;
   } else if (s.type === 'door') {
@@ -1933,6 +1992,10 @@ function updateSelectionPanel() {
         <label class="tool-toggle" style="font-size:10px"><input type="checkbox" ${dm.IH?'checked':''} onchange="editDoorProp(${s.index},'IH',this.checked)"> 水平(IH)</label>
         <label class="tool-toggle" style="font-size:10px"><input type="checkbox" ${dm.DHS?'checked':''} onchange="editDoorProp(${s.index},'DHS',this.checked)"> 星星门(DHS)</label>
       </div>
+      <div style="margin-top:6px;font-size:10px;color:var(--text-dim)">
+        占格 (${(dm.BPMS||[]).length}格): ${(dm.BPMS||[]).map((p,pi)=>`<span style="cursor:pointer;text-decoration:underline dotted" title="点击移除此格" onclick="removeCellFromElement('door',${s.index},${pi})">(${p.x},${p.y})</span>`).join(' ')}
+      </div>
+      <div style="margin-top:4px;font-size:10px;color:var(--accent-bright)">💡 Shift+点击相邻格子可扩展此门</div>
       <button onclick="deleteSelected()" style="margin-top:8px;padding:4px 12px;background:var(--danger);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px">删除此门</button>
     `;
   } else {
@@ -2000,6 +2063,26 @@ function doorToggleTurn(index) {
   renderLevel();
   updateSelectionPanel();
 }
+function removeCellFromElement(type, index, posIndex) {
+  const lists = { block: 'BMS', door: 'DMS' };
+  const listKey = lists[type];
+  if (!listKey || !currentLevel[listKey]?.[index]) return;
+  const el = currentLevel[listKey][index];
+  const positions = el.BPMS || [];
+  if (positions.length <= 1) {
+    // Last cell — delete entire element
+    currentLevel[listKey].splice(index, 1);
+    selectedElement = null;
+  } else {
+    positions.splice(posIndex, 1);
+  }
+  modified = true;
+  renderLevel();
+  updateInfoPanel();
+  updateSelectionPanel();
+  updateJsonPanel();
+}
+
 function deleteSelected() {
   if (!selectedElement || !currentLevel) return;
   const s = selectedElement;
@@ -2117,6 +2200,8 @@ let activeTool = 'cell';
 function switchEditMode(mode) {
   editMode = mode;
   document.getElementById('design-tools').style.display = mode === 'design' ? 'flex' : 'none';
+  // Update pill button active states
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   wrap.style.cursor = mode === 'design' ? 'crosshair' : 'default';
   selectedElement = null;
   if (mode === 'design') setTool(activeTool);
@@ -2163,7 +2248,6 @@ function cloneCurrentLevel() {
     };
   });
 
-  document.getElementById('edit-mode').value = 'design';
   switchEditMode('design');
   setTool('cell');
 
@@ -2246,7 +2330,6 @@ function confirmNewLevel() {
   doorStates = {};
 
   closeNewLevelModal();
-  document.getElementById('edit-mode').value = 'design';
   switchEditMode('design');
   setTool('cell');
 
@@ -2269,6 +2352,46 @@ function handleDesignClick(e) {
   if (editMode !== 'design' || !currentLevel) return false;
   const { gridX, gridY } = mouseToGrid(e);
   const tool = activeTool;
+
+  // Shift+click: extend selected block/door by adding adjacent cell
+  if (e.shiftKey && selectedElement) {
+    const sel = selectedElement;
+    if (sel.type === 'block' && currentLevel.BMS?.[sel.index]) {
+      const bm = currentLevel.BMS[sel.index];
+      const positions = bm.BPMS || [];
+      // Check not already in this block
+      if (positions.some(p => p.x === gridX && p.y === gridY)) return true;
+      // Check adjacency to at least one existing cell
+      const isAdj = positions.some(p =>
+        (Math.abs(p.x - gridX) === 1 && p.y === gridY) ||
+        (Math.abs(p.y - gridY) === 1 && p.x === gridX)
+      );
+      if (!isAdj) { showViolation('Shift+点击需要与方块相邻'); return true; }
+      // Check target is on floor
+      const isCell = (currentLevel.CMS||[]).some(c => c.BPM.x === gridX && c.BPM.y === gridY);
+      if (!isCell) { showViolation('需要先铺棋盘格'); return true; }
+      // Check not occupied by another block
+      const otherBlock = (currentLevel.BMS||[]).findIndex((b,i) => i !== sel.index && (b.BPMS||[]).some(p => p.x === gridX && p.y === gridY));
+      if (otherBlock >= 0) { showViolation('已有其他方块'); return true; }
+      positions.push({ "$type": "BPM", x: gridX, y: gridY });
+      afterPaint();
+      return true;
+    }
+    if (sel.type === 'door' && currentLevel.DMS?.[sel.index]) {
+      const dm = currentLevel.DMS[sel.index];
+      const positions = dm.BPMS || [];
+      if (positions.some(p => p.x === gridX && p.y === gridY)) return true;
+      const isAdj = positions.some(p =>
+        (Math.abs(p.x - gridX) === 1 && p.y === gridY) ||
+        (Math.abs(p.y - gridY) === 1 && p.x === gridX)
+      );
+      if (!isAdj) { showViolation('Shift+点击需要与门相邻'); return true; }
+      positions.push({ "$type": "BPM", x: gridX, y: gridY });
+      afterPaint();
+      return true;
+    }
+  }
+
   switch (tool) {
     case 'cell':      return paintCell(gridX, gridY);
     case 'wall':      return paintWall(gridX, gridY);
