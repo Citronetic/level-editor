@@ -191,20 +191,8 @@ function paintBlock(x, y) {
     return true;
   }
 
-  if (state.selectedElement?.type === 'block' && state.currentLevel.BMS?.[state.selectedElement.index]) {
-    const bm = state.currentLevel.BMS[state.selectedElement.index];
-    const positions = bm.BPMS || [];
-    const isAdj = positions.some(p =>
-      (Math.abs(p.x - x) === 1 && p.y === y) || (Math.abs(p.y - y) === 1 && p.x === x)
-    );
-    if (isAdj) {
-      positions.push({ "$type": "BPM", x, y });
-      afterPaint();
-      updateSelectionPanel();
-      return true;
-    }
-  }
-
+  // Plain click on an empty cell ALWAYS creates a fresh block of the picked color.
+  // Use Shift+click on an adjacent cell to extend the currently-selected block.
   const bct = parseInt(document.getElementById('place-color').value);
   const ice = parseInt(document.getElementById('place-ice').value) || 0;
   if (!state.currentLevel.BMS) state.currentLevel.BMS = [];
@@ -225,28 +213,14 @@ function paintCurtain(x, y) {
   if (!state.currentLevel.CLMS) state.currentLevel.CLMS = [];
   const idx = state.currentLevel.CLMS.findIndex(cl => (cl.BPMS||[]).some(p => p.x === x && p.y === y));
   if (idx >= 0) {
-    // Clicking an existing curtain cell: select it for inspection/extension
+    // Click an existing curtain cell: select it (for CLC editing or Shift+extend)
     state.selectedElement = { type: 'curtain', index: idx };
     renderLevel(); updateInfoPanel(); updateSelectionPanel();
     return true;
   }
 
-  // If a curtain is currently selected and the click target is adjacent, extend it
-  if (state.selectedElement?.type === 'curtain' && state.currentLevel.CLMS?.[state.selectedElement.index]) {
-    const cl = state.currentLevel.CLMS[state.selectedElement.index];
-    const positions = cl.BPMS || [];
-    const isAdj = positions.some(p =>
-      (Math.abs(p.x - x) === 1 && p.y === y) || (Math.abs(p.y - y) === 1 && p.x === x)
-    );
-    if (isAdj) {
-      positions.push({ "$type": "BPM", x, y });
-      afterPaint();
-      updateSelectionPanel();
-      return true;
-    }
-  }
-
-  // Otherwise create a new curtain group seeded at this cell
+  // Plain click on empty cell creates a fresh 1-cell curtain group.
+  // Use Shift+click on an adjacent cell to extend the selected curtain.
   state.currentLevel.CLMS.push({
     "$type": "CLM",
     "BPMS": [{ "$type": "BPM", x, y }],
