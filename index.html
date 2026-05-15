@@ -365,6 +365,8 @@ canvas { image-rendering: auto; flex-shrink: 0; }
         <button class="tool-btn"        data-tool="curtain"   onclick="setTool('curtain',this)"  ><span class="tool-dot" style="background:repeating-linear-gradient(45deg,#8b5cf680,#8b5cf680 2px,#5a3aa4 2px,#5a3aa4 4px)"></span>帘锁</button>
         <button class="tool-btn"        data-tool="generator" onclick="setTool('generator',this)"><span class="tool-dot" style="background:radial-gradient(circle,#74b9ff,#2980b9)"></span>生成器</button>
         <button class="tool-btn"        data-tool="door"      onclick="setTool('door',this)"     ><span class="tool-dot" style="background:#e74c3c;border:2px solid #fff"></span>出口门</button>
+        <button class="tool-btn"        data-tool="colorcell" onclick="setTool('colorcell',this)" ><span class="tool-dot" style="background:linear-gradient(135deg,#00b894,#00cec9);border:1px solid rgba(255,255,255,.3)"></span>连通格</button>
+        <button class="tool-btn"        data-tool="grinder"   onclick="setTool('grinder',this)"  ><span class="tool-dot" style="background:radial-gradient(circle,#ffa500,#e67e22)"></span>研磨器</button>
         <button class="tool-btn"        data-tool="erase"     onclick="setTool('erase',this)"    ><span class="tool-dot" style="background:transparent;border:1px dashed #ff7675;position:relative">&#x2715;</span>擦除</button>
       </div>
       <span id="block-tool-opts" style="display:none;gap:6px;align-items:center">
@@ -1334,7 +1336,7 @@ function renderLevel() {
       if (item.BPMS) item.BPMS.forEach(p => { minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); });
     });
   };
-  scan(currentLevel.CMS); scan(currentLevel.WMS); scan(currentLevel.BMS); scan(currentLevel.DMS);
+  scan(currentLevel.CMS); scan(currentLevel.WMS); scan(currentLevel.BMS); scan(currentLevel.DMS); scan(currentLevel.CCMS); scan(currentLevel.GRM);
   scan(currentLevel.EMS); scan(currentLevel.CLMS);
   if (currentLevel.BSP) currentLevel.BSP.forEach(p => { minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); });
   if (minX === Infinity) { minX=0; maxX=10; minY=0; maxY=10; }
@@ -1475,7 +1477,7 @@ function renderLevel() {
 
   // ─── DOORS ───
   if (showLayer === 'all' || showLayer === 'doors') {
-    (currentLevel.DMS || []).forEach(dm => {
+    (currentLevel.DMS || []).forEach((dm, di) => {
       const color = COLORS[String(dm.BCT)]?.hex || '#888';
       const light = COLORS[String(dm.BCT)]?.light || '#aaa';
       const positions = dm.BPMS || [];
@@ -1500,15 +1502,38 @@ function renderLevel() {
         ctx.stroke();
       });
 
+      // Show DIC number prominently on EACH door cell
+      if (dm.DIC > 0) {
+        const ds = doorStates[di] || {};
+        const remaining = ds.iceRemaining ?? dm.DIC;
+        positions.forEach(p => {
+          const x = gx(p.x), y = gy(p.y);
+          // Ice badge background
+          ctx.fillStyle = remaining > 0 ? 'rgba(100,180,255,0.85)' : 'rgba(0,200,180,0.7)';
+          const badgeSize = Math.max(16, cellSize * 0.45);
+          ctx.beginPath();
+          ctx.arc(x + cellSize/2, y + cellSize/2, badgeSize/2, 0, Math.PI*2);
+          ctx.fill();
+          // Number
+          ctx.fillStyle = '#fff';
+          ctx.font = `bold ${Math.max(11, cellSize*0.32)}px sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(String(remaining), x + cellSize/2, y + cellSize/2);
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'alphabetic';
+        });
+      }
+      // Labels for other door properties
       if (showLabels && positions.length > 0) {
         const p = positions[0];
         ctx.fillStyle = light;
         ctx.font = `bold ${Math.max(9,cellSize/4)}px sans-serif`;
-        let label = 'D';
-        if (dm.DIC > 0) label += dm.DIC;
-        if (dm.IH) label += 'h';
-        if (dm.DHS) label += '*';
-        ctx.fillText(label, gx(p.x)+4, gy(p.y)+Math.max(12,cellSize/3));
+        let label = '';
+        if (dm.IH) label += 'H';
+        if (dm.DHS) label += '★';
+        if (dm.TBD > 0) label += `T${dm.TBD}`;
+        if (label) ctx.fillText(label, gx(p.x)+4, gy(p.y)+cellSize-4);
       }
     });
   }
@@ -1531,6 +1556,86 @@ function renderLevel() {
         ctx.moveTo(cx, cy+6); ctx.lineTo(cx-5, cy-2); ctx.lineTo(cx+5, cy-2);
         ctx.closePath(); ctx.fill();
       });
+    });
+  }
+
+  // ─── CCMS (Color Connected Cells) ───
+  if (showLayer === 'all' || showLayer === 'special') {
+    (currentLevel.CCMS || []).forEach((ccm, ci) => {
+      const color = COLORS[String(ccm.BCT)]?.hex || '#888';
+      const positions = ccm.BPMS || [];
+      // Draw colored connection line between cells
+      if (positions.length > 1) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.globalAlpha = 0.6;
+        ctx.setLineDash([3,3]);
+        ctx.beginPath();
+        ctx.moveTo(gx(positions[0].x)+cellSize/2, gy(positions[0].y)+cellSize/2);
+        for (let i=1; i<positions.length; i++) ctx.lineTo(gx(positions[i].x)+cellSize/2, gy(positions[i].y)+cellSize/2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+      }
+      // Draw colored diamond marker on each cell
+      positions.forEach(p => {
+        const cx = gx(p.x)+cellSize/2, cy = gy(p.y)+cellSize/2;
+        const s = Math.max(5, cellSize*0.18);
+        ctx.fillStyle = color + 'aa';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy-s); ctx.lineTo(cx+s, cy); ctx.lineTo(cx, cy+s); ctx.lineTo(cx-s, cy);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      });
+      // Label
+      if (showLabels && positions.length > 0) {
+        const p = positions[0];
+        ctx.fillStyle = color;
+        ctx.font = `bold ${Math.max(8,cellSize/5)}px sans-serif`;
+        ctx.fillText(`CC${ci}`, gx(p.x)+2, gy(p.y)+cellSize-2);
+      }
+    });
+  }
+
+  // ─── GRM (Grinders) ───
+  if (showLayer === 'all' || showLayer === 'special') {
+    (currentLevel.GRM || []).forEach((grm, gi) => {
+      const entry = grm.BPM;
+      const path = grm.BPMS || [];
+      // Draw grinder path
+      if (path.length > 1) {
+        ctx.strokeStyle = 'rgba(255,165,0,0.4)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([4,3]);
+        ctx.beginPath();
+        ctx.moveTo(gx(path[0].x)+cellSize/2, gy(path[0].y)+cellSize/2);
+        for (let i=1; i<path.length; i++) ctx.lineTo(gx(path[i].x)+cellSize/2, gy(path[i].y)+cellSize/2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      // Draw entry point (gear icon)
+      if (entry) {
+        const x = gx(entry.x), y = gy(entry.y);
+        ctx.fillStyle = 'rgba(255,165,0,0.25)';
+        roundRect(ctx, x+2, y+2, cellSize-4, cellSize-4, 4);
+        ctx.fill();
+        ctx.strokeStyle = '#ffa500';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Gear symbol
+        ctx.fillStyle = '#ffa500';
+        ctx.font = `bold ${Math.max(12,cellSize/2.5)}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText('⚙', x+cellSize/2, y+cellSize/2+4);
+        ctx.textAlign = 'left';
+      }
+      if (showLabels && entry) {
+        ctx.fillStyle = '#ffa500';
+        ctx.font = `bold ${Math.max(8,cellSize/5)}px sans-serif`;
+        ctx.fillText(`GR${gi}`, gx(entry.x)+2, gy(entry.y)+cellSize-2);
+      }
     });
   }
 
@@ -1661,7 +1766,7 @@ function drawBlock(bm, gx, gy, alpha) {
   if (showLabels && positions.length > 0) {
     const p = positions[0];
     const parts = [];
-    if (bm.BIC > 0) parts.push(`n${bm.BIC}`);
+    if (bm.BIC > 0) parts.push(`×${bm.BIC}`);
     if (bm.BAD > 0) parts.push(bm.BAD === 1 ? 'H' : 'V');
     if (bm.KID > 0) parts.push(`K${bm.KID}`);
     if (bm.BHS) parts.push('T');
@@ -2024,8 +2129,8 @@ function setTool(tool, btnEl) {
   activeTool = tool;
   // Update button highlight
   document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
-  // Color picker is used for blocks and doors; ice only for blocks
-  const showColor = tool === 'block' || tool === 'door';
+  // Color picker is used for blocks, doors, and color cells; ice only for blocks
+  const showColor = tool === 'block' || tool === 'door' || tool === 'colorcell';
   document.getElementById('block-tool-opts').style.display = showColor ? 'inline-flex' : 'none';
   document.getElementById('ice-tool-opts').style.display = tool === 'block' ? 'inline-flex' : 'none';
   selectedElement = null;
@@ -2133,7 +2238,7 @@ function confirmNewLevel() {
     "$type": "LM",
     "BMS": [], "DMS": [], "WMS": wms, "CMS": cms,
     "IWMS": [], "GMS": [], "EMS": [], "CLMS": [],
-    "BSP": []
+    "CCMS": [], "GRM": [], "BSP": []
   };
   currentLevelId = seedId;
   selectedElement = null;
@@ -2170,6 +2275,8 @@ function handleDesignClick(e) {
     case 'curtain':   return paintCurtain(gridX, gridY);
     case 'generator': return paintGenerator(gridX, gridY);
     case 'door':      return paintDoor(gridX, gridY);
+    case 'colorcell': return paintColorCell(gridX, gridY);
+    case 'grinder':   return paintGrinder(gridX, gridY);
     case 'erase':     return eraseAt(gridX, gridY);
     default:          return paintBlock(gridX, gridY);
   }
@@ -2257,6 +2364,7 @@ function paintBlock(x, y) {
   });
   selectedElement = { type: 'block', index: currentLevel.BMS.length - 1 };
   afterPaint();
+  updateSelectionPanel();
   return true;
 }
 
@@ -2296,9 +2404,12 @@ function paintDoor(x, y) {
   if (!currentLevel.DMS) currentLevel.DMS = [];
   const idx = currentLevel.DMS.findIndex(d => (d.BPMS||[]).some(p => p.x === x && p.y === y));
   if (idx >= 0) {
-    currentLevel.DMS.splice(idx, 1);
+    // Click existing door -> select it for editing
+    selectedElement = { type: 'door', index: idx };
+    afterPaint();
+    updateSelectionPanel();
   } else {
-    clearTerrainAt(x, y); // removes any cell/wall/door at this spot
+    clearTerrainAt(x, y);
     const bct = parseInt(document.getElementById('place-color').value);
     currentLevel.DMS.push({
       "$type": "DM", "BCT": bct,
@@ -2307,6 +2418,86 @@ function paintDoor(x, y) {
     });
     const newIdx = currentLevel.DMS.length - 1;
     doorStates[newIdx] = { iceRemaining: 0, starSatisfied: true, turnState: 'open' };
+    // Auto-select the new door so user can edit DIC immediately
+    selectedElement = { type: 'door', index: newIdx };
+    afterPaint();
+    updateSelectionPanel();
+  }
+  return true;
+}
+
+function paintColorCell(x, y) {
+  // CCMS: colored connected cells. Click adds to existing group or creates new one.
+  if (!currentLevel.CCMS) currentLevel.CCMS = [];
+  const bct = parseInt(document.getElementById('place-color').value);
+
+  // Check if this position is already in a CCMS group
+  const existingIdx = currentLevel.CCMS.findIndex(cc =>
+    (cc.BPMS||[]).some(p => p.x === x && p.y === y)
+  );
+  if (existingIdx >= 0) {
+    // Remove this position from the group
+    const cc = currentLevel.CCMS[existingIdx];
+    cc.BPMS = cc.BPMS.filter(p => !(p.x === x && p.y === y));
+    if (cc.BPMS.length === 0) currentLevel.CCMS.splice(existingIdx, 1);
+  } else {
+    // Find a same-color group with an adjacent cell, or create new
+    let addedToExisting = false;
+    for (const cc of currentLevel.CCMS) {
+      if (cc.BCT !== bct) continue;
+      const isAdjacent = (cc.BPMS||[]).some(p =>
+        (Math.abs(p.x - x) === 1 && p.y === y) || (Math.abs(p.y - y) === 1 && p.x === x)
+      );
+      if (isAdjacent) {
+        cc.BPMS.push({ "$type": "BPM", x, y });
+        addedToExisting = true;
+        break;
+      }
+    }
+    if (!addedToExisting) {
+      currentLevel.CCMS.push({
+        "$type": "CCM",
+        "BPMS": [{ "$type": "BPM", x, y }],
+        "BCT": bct
+      });
+    }
+  }
+  afterPaint();
+  return true;
+}
+
+function paintGrinder(x, y) {
+  // GRM: grinder. First click = entry point, subsequent = path extension
+  if (!currentLevel.GRM) currentLevel.GRM = [];
+
+  // Check if clicking on existing grinder entry/path
+  const existingIdx = currentLevel.GRM.findIndex(g =>
+    (g.BPM && g.BPM.x === x && g.BPM.y === y) ||
+    (g.BPMS||[]).some(p => p.x === x && p.y === y)
+  );
+  if (existingIdx >= 0) {
+    // Remove point or whole grinder
+    const g = currentLevel.GRM[existingIdx];
+    if (g.BPM && g.BPM.x === x && g.BPM.y === y) {
+      currentLevel.GRM.splice(existingIdx, 1); // remove whole grinder
+    } else {
+      g.BPMS = (g.BPMS||[]).filter(p => !(p.x === x && p.y === y));
+    }
+  } else {
+    // Add to last grinder's path, or create new grinder
+    const lastGrinder = currentLevel.GRM.length > 0 ? currentLevel.GRM[currentLevel.GRM.length - 1] : null;
+    if (lastGrinder && lastGrinder._building) {
+      // Extend path
+      lastGrinder.BPMS.push({ "$type": "BPM", x, y });
+    } else {
+      // Create new grinder with this as entry
+      currentLevel.GRM.push({
+        "$type": "GDM",
+        "BPM": { "$type": "BPM", x, y },
+        "BPMS": [{ "$type": "BPM", x, y }],
+        "_building": true
+      });
+    }
   }
   afterPaint();
   return true;
@@ -2331,6 +2522,8 @@ function eraseAt(x, y) {
   eraseFromList('DMS',  true);
   eraseFromList('EMS',  true);
   eraseFromList('CLMS', true);
+  eraseFromList('CCMS', true);
+  eraseFromList('GRM',  true);
   eraseFromList('GMS',  false);
   eraseFromList('WMS',  false);
   eraseFromList('CMS',  false);
