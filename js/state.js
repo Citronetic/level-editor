@@ -26,4 +26,7 @@ export const state = {
   moveTarget: null,
   lastMoveValid: true,
   moveViolation: '',
+  game: null,
+  gameSnapshot: null,
+  gameOriginalLevel: null,
 };

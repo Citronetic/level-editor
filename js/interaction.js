@@ -4,6 +4,8 @@ import { validateBlockMove, validateGenericMove } from './rules.js';
 import { renderLevel, canvas } from './render.js';
 import { updateInfoPanel, updateSelectionPanel, updateJsonPanel } from './panels.js';
 import { handleDesignClick, showViolation } from './design.js';
+import { isPlayingAnyStatus, isPlaying, blockAtCell, navigateDrag, setBlockPreviewBPMS, commitDrag } from './game.js';
+import { updateHUD } from './play-ui.js';
 
 const wrap = document.getElementById('canvas-wrap');
 const tooltip = document.getElementById('tooltip');
@@ -56,6 +58,29 @@ export function setupPanZoom() {
     state.lastMoveValid = true;
     state.moveViolation = '';
 
+    // ── Play mode: live drag a block ────────────────────────────────
+    if (isPlayingAnyStatus()) {
+      const { gridX, gridY } = mouseToGrid(e);
+      const bi = blockAtCell(gridX, gridY);
+      if (bi >= 0 && isPlaying()) {
+        const bm = state.currentLevel.BMS[bi];
+        state.playDrag = {
+          blockIdx: bi,
+          origBPMS: bm.BPMS.map(p => ({ x: p.x, y: p.y })),
+          startX: e.clientX,
+          startY: e.clientY,
+          curtainHitIdx: -1,
+          axisLocked: null,             // 'x' or 'y' — locks after first noticeable motion
+        };
+        state.selectedElement = { type: 'block', index: bi };
+        state.dragMode = 'play-drag';
+        wrap.style.cursor = 'grabbing';
+      } else {
+        state.dragMode = 'none';
+      }
+      return;
+    }
+
     const canMove = state.selectedElement && state.currentLevel && (state.editMode === 'play' || state.isCustomLevel);
     if (canMove) {
       const { gridX, gridY } = mouseToGrid(e);
@@ -81,6 +106,22 @@ export function setupPanZoom() {
 
   window.addEventListener('mousemove', e => {
     if (state.dragMode === 'none') return;
+
+    // ── Play live-drag preview (chained corners) ────────────────────
+    if (state.dragMode === 'play-drag' && state.playDrag) {
+      const pd = state.playDrag;
+      const dxPx = e.clientX - pd.startX;
+      const dyPx = e.clientY - pd.startY;
+      const cs = state.cellSize * state.zoom;
+      const cellsX = Math.round(dxPx / cs);
+      const cellsY = Math.round(-dyPx / cs);
+      const nav = navigateDrag(pd.blockIdx, pd.origBPMS, cellsX, cellsY);
+      setBlockPreviewBPMS(pd.blockIdx, nav.bpms);
+      pd.curtainHitIdx = nav.curtainIdx;
+      renderLevel();
+      return;
+    }
+
     const dx = e.clientX - state.dragStartX;
     const dy = e.clientY - state.dragStartY;
     const dist = Math.sqrt(dx*dx + dy*dy);
@@ -154,7 +195,23 @@ export function setupPanZoom() {
     state.isDragging = false;
     state.dragMode = 'none';
     wrap.classList.remove('dragging');
-    wrap.style.cursor = 'default';
+    wrap.style.cursor = isPlayingAnyStatus() ? 'grab' : 'default';
+
+    // ── Play live-drag commit ───────────────────────────────────────
+    if (wasDragMode === 'play-drag' && state.playDrag) {
+      const pd = state.playDrag;
+      state.playDrag = null;
+      const res = commitDrag(pd.blockIdx, pd.origBPMS, pd.curtainHitIdx);
+      if (res.moved === 0 && state.moveViolation) showViolation(state.moveViolation);
+      state.moveViolation = '';
+      // Clear selection so the rendered block isn't outlined post-move
+      state.selectedElement = null;
+      renderLevel();
+      updateHUD();
+      updateInfoPanel();
+      updateJsonPanel();
+      return;
+    }
 
     if (state.moveTarget && wasDragMode === 'move') {
       if (!wasValid) {
@@ -299,6 +356,10 @@ function getCellInfo(gx, gy) {
 
   (state.currentLevel.WMS||[]).forEach(w => {
     if (posMatch(w.BPM)) items.push({ type: '外墙 (Wall)', props: { '边界层级 (BI)': w.BI }});
+  });
+
+  (state.currentLevel.IWMS||[]).forEach((iw, i) => {
+    if ((iw.BPMS||[]).some(posMatch)) items.push({ type: `内墙 (InnerWall #${i})`, props: { '占格数': iw.BPMS.length }});
   });
 
   (state.currentLevel.BMS||[]).forEach((bm, i) => {

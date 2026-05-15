@@ -15,6 +15,8 @@ import {
   updateNewLevelPreview, importLevelFromFile, updateModeToggleVisibility,
   initCustomLevels
 } from './custom-levels.js';
+import { playStart, playReset, playStop, refreshPlayButtons } from './play-ui.js';
+import { stopGame } from './game.js';
 
 // ── Wire up lazy dependencies ──
 initDesign(mouseToGrid, zoomFit);
@@ -31,6 +33,7 @@ Object.assign(window, {
   selectBlock, editProp, editDoorProp,
   doorMeltIce, doorResetIce, doorToggleStar, doorToggleTurn,
   removeCellFromElement, deleteSelected,
+  playStart, playReset, playStop,
 });
 
 // ── Keyboard handler (consolidated) ──
@@ -83,6 +86,8 @@ document.getElementById('show-grid').addEventListener('change', renderLevel);
 
 // ── Load level ──
 async function loadLevel(seedId) {
+  if (state.game) stopGame();
+  refreshPlayButtons();
   const custom = state.customLevels.find(c => c.seedId === seedId);
   try {
     if (custom) {

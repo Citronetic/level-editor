@@ -35,6 +35,11 @@ function drawBlock(bm, gx, gy, alpha) {
   const cInfo = COLORS[String(bm.BCT)];
   const color = cInfo?.hex || '#888';
   const light = cInfo?.light || '#aaa';
+  // ILE blocks paint the outer skin in LBCT color and the inner core in BCT color
+  const hasLayer = !!bm.ILE;
+  const outerInfo = hasLayer ? COLORS[String(bm.LBCT ?? bm.BCT)] : null;
+  const outerColor = outerInfo?.hex || color;
+  const outerLight = outerInfo?.light || light;
   const positions = bm.BPMS || [];
   if (positions.length === 0) return;
   const showLabels = document.getElementById('show-labels').checked;
@@ -52,10 +57,13 @@ function drawBlock(bm, gx, gy, alpha) {
     const hasLeft = posSet.has(`${p.x-1},${p.y}`);
     const hasUp = posSet.has(`${p.x},${p.y+1}`);
 
+    // Outer skin paint uses outerColor for ILE blocks, otherwise BCT color
+    const paintColor = hasLayer ? outerColor : color;
+    const paintLight = hasLayer ? outerLight : light;
     const grad = ctx.createLinearGradient(x, y, x, y+cs);
-    grad.addColorStop(0, light);
-    grad.addColorStop(0.3, color);
-    grad.addColorStop(1, darken(color, 0.3));
+    grad.addColorStop(0, paintLight);
+    grad.addColorStop(0.3, paintColor);
+    grad.addColorStop(1, darken(paintColor, 0.3));
     ctx.fillStyle = grad;
 
     const r = Math.max(2, cs * 0.1);
@@ -84,6 +92,23 @@ function drawBlock(bm, gx, gy, alpha) {
     ctx.lineWidth = 1;
     roundRectVar(ctx, elx, ety, erw, erh, tl, tr, br, bl);
     ctx.stroke();
+
+    // ── ILE inner core: a smaller rounded square in the BCT color ──
+    if (hasLayer) {
+      const innerInset = Math.max(4, cs * 0.22);
+      const ix = x + innerInset, iy = y + innerInset;
+      const iw = cs - innerInset * 2, ih = cs - innerInset * 2;
+      const innerGrad = ctx.createLinearGradient(ix, iy, ix, iy + ih);
+      innerGrad.addColorStop(0, light);
+      innerGrad.addColorStop(0.4, color);
+      innerGrad.addColorStop(1, darken(color, 0.25));
+      ctx.fillStyle = innerGrad;
+      roundRect(ctx, ix, iy, iw, ih, Math.max(2, cs*0.06));
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
 
     if (bm.BD > 0) {
       const iceAlpha = Math.min(0.6, 0.15 * bm.BD);
@@ -165,8 +190,8 @@ export function renderLevel() {
       if (item.BPMS) item.BPMS.forEach(p => { minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); });
     });
   };
-  scan(state.currentLevel.CMS); scan(state.currentLevel.WMS); scan(state.currentLevel.BMS); scan(state.currentLevel.DMS); scan(state.currentLevel.CCMS); scan(state.currentLevel.GRM);
-  scan(state.currentLevel.EMS); scan(state.currentLevel.CLMS);
+  scan(state.currentLevel.CMS); scan(state.currentLevel.WMS); scan(state.currentLevel.IWMS); scan(state.currentLevel.BMS); scan(state.currentLevel.DMS); scan(state.currentLevel.CCMS); scan(state.currentLevel.GRM);
+  scan(state.currentLevel.EMS); scan(state.currentLevel.CLMS); scan(state.currentLevel.GMS);
   if (state.currentLevel.BSP) state.currentLevel.BSP.forEach(p => { minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); });
   if (minX === Infinity) { minX=0; maxX=10; minY=0; maxY=10; }
 
@@ -211,31 +236,6 @@ export function renderLevel() {
       ctx.strokeStyle = '#343458';
       ctx.lineWidth = 0.5;
       ctx.stroke();
-    });
-  }
-
-  // ─── CURTAIN LOCKS ───
-  if (showLayer === 'all' || showLayer === 'special') {
-    (state.currentLevel.CLMS || []).forEach(clm => {
-      (clm.BPMS || []).forEach(p => {
-        const x = gx(p.x), y = gy(p.y);
-        ctx.fillStyle = 'rgba(139,92,246,0.15)';
-        ctx.fillRect(x, y, cellSize, cellSize);
-        ctx.save();
-        ctx.beginPath(); ctx.rect(x, y, cellSize, cellSize); ctx.clip();
-        ctx.strokeStyle = 'rgba(139,92,246,0.3)';
-        ctx.lineWidth = 1;
-        for (let i = -cellSize; i < cellSize*2; i += 6) {
-          ctx.beginPath(); ctx.moveTo(x+i, y); ctx.lineTo(x+i+cellSize, y+cellSize); ctx.stroke();
-        }
-        ctx.restore();
-      });
-      if (showLabels && clm.BPMS.length > 0) {
-        const cp = clm.BPMS[0];
-        ctx.fillStyle = '#c084fc';
-        ctx.font = `bold ${Math.max(9,cellSize/4)}px sans-serif`;
-        ctx.fillText(`CL:${clm.CLC}`, gx(cp.x)+3, gy(cp.y)+cellSize-4);
-      }
     });
   }
 
@@ -290,11 +290,174 @@ export function renderLevel() {
       ctx.beginPath(); ctx.moveTo(x+cellSize*0.25, y+half); ctx.lineTo(x+cellSize*0.25, y+cellSize); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(x+cellSize*0.75, y+half); ctx.lineTo(x+cellSize*0.75, y+cellSize); ctx.stroke();
     });
+
+    // ── INNER WALLS (IWMS) ── treated as wall cells by the game engine
+    (state.currentLevel.IWMS || []).forEach(iw => {
+      (iw.BPMS || []).forEach(p => {
+        const x = gx(p.x), y = gy(p.y);
+        const grad = ctx.createLinearGradient(x, y, x+cellSize, y+cellSize);
+        grad.addColorStop(0, '#6a5a8a');
+        grad.addColorStop(1, '#4a3a6a');
+        ctx.fillStyle = grad;
+        roundRect(ctx, x+2, y+2, cellSize-4, cellSize-4, 4);
+        ctx.fill();
+        ctx.strokeStyle = '#8a7aaa';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        // hatch pattern to distinguish from outer walls
+        ctx.save();
+        ctx.beginPath(); ctx.rect(x+2, y+2, cellSize-4, cellSize-4); ctx.clip();
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 1;
+        for (let i = -cellSize; i < cellSize*2; i += 5) {
+          ctx.beginPath(); ctx.moveTo(x+i, y); ctx.lineTo(x+i+cellSize, y+cellSize); ctx.stroke();
+        }
+        ctx.restore();
+      });
+    });
   }
 
   // ─── BLOCKS ───
   if (showLayer === 'all' || showLayer === 'blocks') {
-    (state.currentLevel.BMS || []).forEach(bm => drawBlock(bm, gx, gy, 1.0));
+    const anim = state.game?.anim;
+    const animActive = anim && anim.t < 1;
+    (state.currentLevel.BMS || []).forEach((bm, i) => {
+      if (animActive && anim.blockIdx === i) {
+        const k = 1 - anim.t;
+        const offX = -anim.dx * k * cellSize;
+        const offY =  anim.dy * k * cellSize;   // board y inverted on screen
+        const ax = (x) => gx(x) + offX;
+        const ay = (y) => gy(y) + offY;
+        drawBlock(bm, ax, ay, 1.0);
+      } else {
+        drawBlock(bm, gx, gy, 1.0);
+      }
+    });
+    // Draw the exit-ghost (block already spliced from BMS but mid-slide)
+    if (animActive && anim.blockIdx === -1 && anim.ghostBPMS) {
+      const k = 1 - anim.t;
+      const offX = -anim.dx * k * cellSize;
+      const offY =  anim.dy * k * cellSize;
+      const ax = (x) => gx(x) + offX;
+      const ay = (y) => gy(y) + offY;
+      drawBlock({ BCT: anim.ghostBCT, BPMS: anim.ghostBPMS }, ax, ay, 1 - anim.t * 0.4);
+    }
+  }
+
+  // ─── CURTAIN LOCKS (drape over blocks while CLC > 0; vanish at 0) ───
+  if (showLayer === 'all' || showLayer === 'special') {
+    // Subtle per-CLM hue shift so two adjacent curtain groups read as distinct
+    const CURTAIN_PALETTE = [
+      { dark: '#4a2d7a', mid: '#7c4cc8', light: '#5b3a96', rim: '#b89aff' },
+      { dark: '#2d4a7a', mid: '#4c7cc8', light: '#3a5b96', rim: '#9aabff' },
+      { dark: '#7a2d4a', mid: '#c84c7c', light: '#963a5b', rim: '#ff9ab8' },
+      { dark: '#2d7a5a', mid: '#4cc88c', light: '#3a965b', rim: '#9affb8' },
+    ];
+    (state.currentLevel.CLMS || []).forEach((clm, ci) => {
+      if ((clm.CLC || 0) <= 0) return;            // broken curtain: vanish, blocks visible
+      const cells = clm.BPMS || [];
+      if (cells.length === 0) return;
+      const palette = CURTAIN_PALETTE[ci % CURTAIN_PALETTE.length];
+      const posSet = new Set(cells.map(p => `${p.x},${p.y}`));
+      const ys = cells.map(p => p.y);
+      const maxY = Math.max(...ys);
+
+      cells.forEach(p => {
+        const x = gx(p.x), y = gy(p.y);
+        const hasLeft  = posSet.has(`${p.x-1},${p.y}`);
+        const hasRight = posSet.has(`${p.x+1},${p.y}`);
+        const hasUp    = posSet.has(`${p.x},${p.y+1}`);
+        const hasDown  = posSet.has(`${p.x},${p.y-1}`);
+
+        // Fabric base — velvet gradient in this group's palette
+        const fabricGrad = ctx.createLinearGradient(x, y, x, y + cellSize);
+        fabricGrad.addColorStop(0, palette.light);
+        fabricGrad.addColorStop(0.5, palette.mid);
+        fabricGrad.addColorStop(1, palette.dark);
+        ctx.fillStyle = fabricGrad;
+        ctx.fillRect(x, y, cellSize, cellSize);
+
+        // Vertical pleats — bands of light/dark for fabric depth
+        ctx.save();
+        ctx.beginPath(); ctx.rect(x, y, cellSize, cellSize); ctx.clip();
+        const pleatCount = 4;
+        const pleatW = cellSize / pleatCount;
+        for (let i = 0; i < pleatCount; i++) {
+          const px = x + i * pleatW;
+          const g = ctx.createLinearGradient(px, y, px + pleatW, y);
+          g.addColorStop(0, 'rgba(255,255,255,0.16)');
+          g.addColorStop(0.4, 'rgba(255,255,255,0.04)');
+          g.addColorStop(0.55, 'rgba(0,0,0,0.0)');
+          g.addColorStop(1, 'rgba(0,0,0,0.32)');
+          ctx.fillStyle = g;
+          ctx.fillRect(px, y, pleatW, cellSize);
+        }
+        ctx.restore();
+
+        // Internal seam between adjacent curtain cells of the same group
+        if (hasLeft)  { ctx.strokeStyle='rgba(0,0,0,0.35)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x+0.5, y); ctx.lineTo(x+0.5, y+cellSize); ctx.stroke(); }
+        if (hasRight) { ctx.strokeStyle='rgba(255,255,255,0.08)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(x+cellSize-0.5, y); ctx.lineTo(x+cellSize-0.5, y+cellSize); ctx.stroke(); }
+
+        // Bottom hem of the curtain — appears only along the actual bottom edge of this group
+        if (!hasDown) {
+          ctx.fillStyle = 'rgba(0,0,0,0.45)';
+          const hemH = Math.max(2, cellSize*0.07);
+          ctx.fillRect(x, y + cellSize - hemH, cellSize, hemH);
+        }
+
+        // Strong outer boundary on edges that face OUTSIDE this group
+        // (this is what visually separates adjacent CLM groups from each other)
+        ctx.strokeStyle = palette.rim;
+        ctx.lineWidth = Math.max(2, cellSize * 0.06);
+        if (!hasLeft)  { ctx.beginPath(); ctx.moveTo(x+1, y); ctx.lineTo(x+1, y+cellSize); ctx.stroke(); }
+        if (!hasRight) { ctx.beginPath(); ctx.moveTo(x+cellSize-1, y); ctx.lineTo(x+cellSize-1, y+cellSize); ctx.stroke(); }
+        if (!hasUp)    { ctx.beginPath(); ctx.moveTo(x, y+1); ctx.lineTo(x+cellSize, y+1); ctx.stroke(); }
+        if (!hasDown)  { ctx.beginPath(); ctx.moveTo(x, y+cellSize-1); ctx.lineTo(x+cellSize, y+cellSize-1); ctx.stroke(); }
+      });
+
+      // Rod across the top edge of the curtain (only across the topmost row of this group)
+      const topRow = cells.filter(p => p.y === maxY);
+      if (topRow.length) {
+        const xsTop = topRow.map(p => p.x).sort((a,b)=>a-b);
+        const rx = gx(xsTop[0]);
+        const rxEnd = gx(xsTop[xsTop.length-1]) + cellSize;
+        const ry = gy(maxY) - Math.max(2, cellSize*0.08);
+        const rh = Math.max(3, cellSize * 0.14);
+        const rodGrad = ctx.createLinearGradient(0, ry, 0, ry + rh);
+        rodGrad.addColorStop(0, '#d4be72');
+        rodGrad.addColorStop(0.5, '#8a6a2e');
+        rodGrad.addColorStop(1, '#5a4520');
+        ctx.fillStyle = rodGrad;
+        roundRect(ctx, rx - 2, ry, rxEnd - rx + 4, rh, rh / 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+
+      // CLC remaining-hits badge on the first cell of the group
+      const cp = cells[0];
+      const px = gx(cp.x), py = gy(cp.y);
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      const badgeSize = Math.max(16, cellSize * 0.42);
+      ctx.beginPath();
+      ctx.arc(px + cellSize/2, py + cellSize/2, badgeSize/2, 0, Math.PI*2);
+      ctx.fill();
+      ctx.strokeStyle = palette.dark;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = palette.dark;
+      ctx.font = `bold ${Math.max(11, cellSize*0.32)}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(String(clm.CLC), px + cellSize/2, py + cellSize/2);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+
+      if (showLabels) {
+        ctx.fillStyle = palette.rim;
+        ctx.font = `bold ${Math.max(9, cellSize/4.5)}px sans-serif`;
+        ctx.fillText(`CL${ci}`, gx(cp.x)+3, gy(cp.y)+cellSize-4);
+      }
+    });
   }
 
   // ─── DOORS ───

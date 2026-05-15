@@ -226,6 +226,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
   display: flex; align-items: center; justify-content: center;
 }
 #canvas-wrap.moving { cursor: move; }
+#canvas-wrap.playing { cursor: grab; }
+#canvas-wrap.playing.dragging { cursor: grabbing; }
+
+/* Play HUD */
+#play-hud {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; align-items: center; pointer-events: none;
+  z-index: 50;
+}
+.hud-pill {
+  background: rgba(20, 20, 35, 0.85); border: 1px solid var(--border);
+  padding: 6px 12px; border-radius: 999px; font-size: 12px;
+  display: flex; gap: 8px; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.hud-pill .hud-key { color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+.hud-pill .hud-val { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+#hud-banner {
+  position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+  background: rgba(20, 20, 35, 0.95); border: 2px solid var(--success);
+  padding: 14px 28px; border-radius: 10px; font-size: 18px; font-weight: 600;
+  color: var(--success); pointer-events: auto;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  white-space: nowrap;
+}
+#hud-banner.lost { border-color: var(--danger); color: var(--danger); }
+#hud-banner button {
+  margin-top: 4px; background: var(--bg-card); color: var(--text);
+  border: 1px solid var(--border); padding: 6px 14px; border-radius: 6px;
+  font-size: 12px; cursor: pointer;
+}
+#hud-banner button:hover { background: var(--bg-hover); }
 
 /* Violation toast */
 #violation-toast {

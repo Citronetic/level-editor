@@ -41,6 +41,11 @@
         <button class="mode-btn active" data-mode="play" onclick="switchEditMode('play')">游戏模式</button>
         <button class="mode-btn" data-mode="design" onclick="switchEditMode('design')">设计模式</button>
       </div>
+      <div class="tb-play" style="display:flex;gap:6px;align-items:center;margin-left:8px">
+        <button class="tb-action-btn primary" id="btn-play" onclick="playStart()" title="开始试玩 (按方块拖出方向滑动)">▶ 试玩</button>
+        <button class="tb-action-btn" id="btn-reset" style="display:none" onclick="playReset()" title="重置回开局">↺ 重置</button>
+        <button class="tb-action-btn" id="btn-stop" style="display:none" onclick="playStop()" title="退出试玩">■ 退出</button>
+      </div>
       <div class="tb-actions">
         <button class="tb-action-btn primary" onclick="createBlankLevel()" title="创建空白关卡">+ 新建</button>
         <button class="tb-action-btn" onclick="cloneCurrentLevel()" title="克隆当前关卡">克隆</button>
@@ -109,6 +114,12 @@
   <div id="canvas-area">
     <div id="canvas-wrap">
       <canvas id="canvas"></canvas>
+      <div id="play-hud" style="display:none">
+        <div class="hud-pill"><span class="hud-key">步数</span><span class="hud-val" id="hud-moves">0</span></div>
+        <div class="hud-pill"><span class="hud-key">剩余</span><span class="hud-val" id="hud-remaining">0</span></div>
+        <div class="hud-pill" id="hud-keys" style="display:none"><span class="hud-key">钥匙</span><span class="hud-val" id="hud-keys-val"></span></div>
+        <div id="hud-banner" style="display:none"></div>
+      </div>
     </div>
     <div class="zoom-controls">
       <button class="zoom-btn" onclick="zoomIn()">+</button>
