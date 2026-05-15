@@ -4,7 +4,7 @@ import { setupPanZoom, zoomIn, zoomOut, zoomFit, mouseToGrid } from './interacti
 import { renderLevel } from './render.js';
 import {
   switchTab, buildLegend, updateInfoPanel, updateJsonPanel,
-  selectBlock, updateSelectionPanel, editProp, editDoorProp,
+  selectBlock, updateSelectionPanel, editProp, editDoorProp, editCurtainProp,
   doorMeltIce, doorResetIce, doorToggleStar, doorToggleTurn,
   removeCellFromElement, deleteSelected
 } from './panels.js';
@@ -30,7 +30,7 @@ Object.assign(window, {
   zoomIn, zoomOut, zoomFit, switchTab,
   closeNewLevelModal, confirmNewLevel, updateNewLevelPreview,
   closeCloneModal, confirmClone,
-  selectBlock, editProp, editDoorProp,
+  selectBlock, editProp, editDoorProp, editCurtainProp,
   doorMeltIce, doorResetIce, doorToggleStar, doorToggleTurn,
   removeCellFromElement, deleteSelected,
   playStart, playReset, playStop,

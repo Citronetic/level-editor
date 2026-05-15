@@ -208,6 +208,18 @@ export function updateSelectionPanel() {
           <label class="tool-toggle" style="font-size:10px"><input type="checkbox" ${bm.BHS?'checked':''} onchange="editProp('block',${s.index},'BHS',this.checked)"> 高方块(BHS)</label>
           <label class="tool-toggle" style="font-size:10px"><input type="checkbox" ${bm.ILE?'checked':''} onchange="editProp('block',${s.index},'ILE',this.checked)"> 可爆炸(ILE)</label>
         </div>
+        ${bm.ILE ? `
+          <div style="margin-top:6px;padding:6px;background:var(--bg-darkest);border:1px solid var(--border);border-radius:5px">
+            <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px">外壳色 (LBCT) — 先消外壳再消内核</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">
+              ${Object.entries(COLORS).filter(([k])=>parseInt(k)>=0).map(([k,v])=>`
+                <button title="${v.name}" onclick="editProp('block',${s.index},'LBCT',${k})"
+                  style="width:18px;height:18px;border-radius:50%;cursor:pointer;background:${v.hex};border:${(bm.LBCT??0)==parseInt(k)?'2px solid #fff':'1px solid rgba(255,255,255,0.2)'};box-shadow:${(bm.LBCT??0)==parseInt(k)?'0 0 0 2px var(--accent)':'none'};padding:0"></button>
+              `).join('')}
+            </div>
+            <div style="margin-top:4px;font-size:10px;color:var(--text-dim)">内核色 ${COLORS[String(bm.BCT)]?.name} · 外壳色 ${COLORS[String(bm.LBCT??0)]?.name}</div>
+          </div>
+        ` : ''}
         <div style="margin-top:6px;font-size:10px;color:var(--text-dim)">
           占格 (${(bm.BPMS||[]).length}格): ${(bm.BPMS||[]).map((p,pi)=>`<span style="cursor:pointer;text-decoration:underline dotted" title="点击移除此格" onclick="removeCellFromElement('block',${s.index},${pi})">(${p.x},${p.y})</span>`).join(' ')}
         </div>
@@ -262,6 +274,27 @@ export function updateSelectionPanel() {
         <div style="margin-top:4px;font-size:10px;color:var(--accent-bright)">💡 Shift+点击相邻格子可扩展此门</div>
         <button onclick="deleteSelected()" style="margin-top:8px;padding:4px 12px;background:var(--danger);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px">删除此门</button>
       `;
+    } else if (s.type === 'curtain') {
+      const cl = state.currentLevel.CLMS?.[s.index];
+      if (!cl) { sec.style.display='none'; return; }
+      html = `
+        <div style="font-weight:600;color:var(--accent-bright);margin-bottom:8px">${typeNames[s.type]} #${s.index}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+          <label style="font-size:10px;color:var(--text-dim)">解锁次数 (CLC)<br>
+            <input type="number" min="0" value="${cl.CLC||0}" onchange="editCurtainProp(${s.index},'CLC',+this.value)"
+              style="width:100%;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:3px;border-radius:3px;font-size:11px">
+          </label>
+          <div style="font-size:10px;color:var(--text-dim)">覆盖格数<br>
+            <div style="padding:3px;font-size:11px;color:var(--text)">${(cl.BPMS||[]).length}</div>
+          </div>
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:var(--text-dim)">
+          占格: ${(cl.BPMS||[]).map((p,pi)=>`<span style="cursor:pointer;text-decoration:underline dotted" title="点击移除此格" onclick="removeCellFromElement('curtain',${s.index},${pi})">(${p.x},${p.y})</span>`).join(' ')}
+        </div>
+        <div style="margin-top:4px;font-size:10px;color:var(--accent-bright)">💡 Shift+点击相邻格子可扩展此帘锁（或选中帘锁后用帘锁工具点相邻格）</div>
+        <div style="margin-top:4px;font-size:10px;color:var(--text-dim)">每出场一个方块，CLC 自动 -1；CLC=0 时帘子破开</div>
+        <button onclick="deleteSelected()" style="margin-top:8px;padding:4px 12px;background:var(--danger);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px">删除此帘锁</button>
+      `;
     } else {
       html = `<div style="font-weight:600;color:var(--accent-bright);margin-bottom:8px">${typeNames[s.type]} #${s.index}</div>
         <button onclick="deleteSelected()" style="margin-top:8px;padding:4px 12px;background:var(--danger);color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px">删除</button>`;
@@ -277,6 +310,20 @@ export function editProp(type, index, prop, value) {
     state.modified = true;
     renderLevel();
     updateInfoPanel();
+    updateSelectionPanel();
+    updateJsonPanel();
+    autoSave();
+  }
+}
+
+export function editCurtainProp(index, prop, value) {
+  if (!state.isCustomLevel) return;
+  if (state.currentLevel.CLMS?.[index]) {
+    state.currentLevel.CLMS[index][prop] = value;
+    state.modified = true;
+    renderLevel();
+    updateInfoPanel();
+    updateSelectionPanel();
     updateJsonPanel();
     autoSave();
   }

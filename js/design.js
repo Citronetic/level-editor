@@ -93,6 +93,21 @@ export function handleDesignClick(e) {
       afterPaint();
       return true;
     }
+    if (sel.type === 'curtain' && state.currentLevel.CLMS?.[sel.index]) {
+      const cl = state.currentLevel.CLMS[sel.index];
+      const positions = cl.BPMS || [];
+      if (positions.some(p => p.x === gridX && p.y === gridY)) return true;
+      const isAdj = positions.some(p =>
+        (Math.abs(p.x - gridX) === 1 && p.y === gridY) ||
+        (Math.abs(p.y - gridY) === 1 && p.x === gridX)
+      );
+      if (!isAdj) { showViolation('Shift+点击需要与帘锁相邻'); return true; }
+      const otherCurtain = (state.currentLevel.CLMS||[]).findIndex((c,i) => i !== sel.index && (c.BPMS||[]).some(p => p.x === gridX && p.y === gridY));
+      if (otherCurtain >= 0) { showViolation('已属于其他帘锁组'); return true; }
+      positions.push({ "$type": "BPM", x: gridX, y: gridY });
+      afterPaint();
+      return true;
+    }
   }
 
   switch (tool) {
@@ -210,15 +225,36 @@ function paintCurtain(x, y) {
   if (!state.currentLevel.CLMS) state.currentLevel.CLMS = [];
   const idx = state.currentLevel.CLMS.findIndex(cl => (cl.BPMS||[]).some(p => p.x === x && p.y === y));
   if (idx >= 0) {
-    state.currentLevel.CLMS.splice(idx, 1);
-  } else {
-    state.currentLevel.CLMS.push({
-      "$type": "CLM",
-      "BPMS": [{ "$type": "BPM", x, y }],
-      "CLC": 1
-    });
+    // Clicking an existing curtain cell: select it for inspection/extension
+    state.selectedElement = { type: 'curtain', index: idx };
+    renderLevel(); updateInfoPanel(); updateSelectionPanel();
+    return true;
   }
+
+  // If a curtain is currently selected and the click target is adjacent, extend it
+  if (state.selectedElement?.type === 'curtain' && state.currentLevel.CLMS?.[state.selectedElement.index]) {
+    const cl = state.currentLevel.CLMS[state.selectedElement.index];
+    const positions = cl.BPMS || [];
+    const isAdj = positions.some(p =>
+      (Math.abs(p.x - x) === 1 && p.y === y) || (Math.abs(p.y - y) === 1 && p.x === x)
+    );
+    if (isAdj) {
+      positions.push({ "$type": "BPM", x, y });
+      afterPaint();
+      updateSelectionPanel();
+      return true;
+    }
+  }
+
+  // Otherwise create a new curtain group seeded at this cell
+  state.currentLevel.CLMS.push({
+    "$type": "CLM",
+    "BPMS": [{ "$type": "BPM", x, y }],
+    "CLC": 1
+  });
+  state.selectedElement = { type: 'curtain', index: state.currentLevel.CLMS.length - 1 };
   afterPaint();
+  updateSelectionPanel();
   return true;
 }
 
