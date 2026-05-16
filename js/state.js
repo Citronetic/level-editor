@@ -29,4 +29,8 @@ export const state = {
   game: null,
   gameSnapshot: null,
   gameOriginalLevel: null,
+  // Block-tool sub-state: which shape to drop on click, and the draw-mode (custom shape) buffer.
+  placeShape: '1x1',
+  drawMode: false,
+  draftCells: [],
 };

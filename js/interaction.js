@@ -204,8 +204,14 @@ export function setupPanZoom() {
       const res = commitDrag(pd.blockIdx, pd.origBPMS, pd.curtainHitIdx);
       if (res.moved === 0 && state.moveViolation) showViolation(state.moveViolation);
       state.moveViolation = '';
-      // Clear selection so the rendered block isn't outlined post-move
-      state.selectedElement = null;
+      // If the click didn't actually move anything, treat it as a "select for keyboard"
+      // and keep the block selected so WASD/arrow keys can target it.
+      // After a real move (or exit), drop the selection.
+      if (res.moved === 0 && !res.exited) {
+        state.selectedElement = { type: 'block', index: pd.blockIdx };
+      } else {
+        state.selectedElement = null;
+      }
       renderLevel();
       updateHUD();
       updateInfoPanel();

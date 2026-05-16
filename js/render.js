@@ -46,6 +46,7 @@ function drawBlock(bm, gx, gy, alpha) {
   const cs = state.renderState.cellSize;
   const inset = Math.max(3, cs * 0.08);
   const posSet = new Set(positions.map(p => `${p.x},${p.y}`));
+  const iced = (bm.BIC || 0) > 0 || (bm.BD || 0) > 0;
 
   ctx.globalAlpha = alpha;
 
@@ -86,6 +87,35 @@ function drawBlock(bm, gx, gy, alpha) {
     roundRectVar(ctx, elx, ety, erw, erh, tl, tr, br, bl);
     ctx.clip();
     ctx.fillRect(elx, ety, erw, erh * 0.3);
+
+    // ── LEGO-style studs: 2x2 dimples per cell. Subtle so it reads as texture, not noise.
+    // Skip when iced (the frost layer reads as the dominant surface).
+    if (!iced && cs >= 22) {
+      const studInset = cs * 0.20;
+      const studGap = (cs - 2 * studInset) / 2;
+      const studR = Math.max(1.5, cs * 0.075);
+      ctx.fillStyle = 'rgba(255,255,255,0.22)';
+      for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+          const sx = x + studInset + studGap * (i + 0.5);
+          const sy = y + studInset + studGap * (j + 0.5);
+          ctx.beginPath();
+          ctx.arc(sx, sy, studR, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      // Tiny shadow under each stud for depth
+      ctx.fillStyle = 'rgba(0,0,0,0.15)';
+      for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+          const sx = x + studInset + studGap * (i + 0.5);
+          const sy = y + studInset + studGap * (j + 0.5) + studR * 0.4;
+          ctx.beginPath();
+          ctx.arc(sx, sy, studR * 0.55, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
     ctx.restore();
 
     ctx.strokeStyle = 'rgba(0,0,0,0.3)';
@@ -129,21 +159,48 @@ function drawBlock(bm, gx, gy, alpha) {
     }
   });
 
-  // BIC number badge on first cell
-  if (bm.BIC > 0 && positions.length > 0) {
-    const p = positions[0];
-    const px = gx(p.x), py = gy(p.y);
+  // Bounding-box center in screen pixels — used by overlays that should sit on the whole piece, not a single cell.
+  const sxs = positions.map(p => gx(p.x));
+  const sys = positions.map(p => gy(p.y));
+  const bboxCenterX = (Math.min(...sxs) + Math.max(...sxs) + cs) / 2;
+  const bboxCenterY = (Math.min(...sys) + Math.max(...sys) + cs) / 2;
+
+  // BIC number badge at the bounding-box center (frost disc — bigger pieces get a bigger badge)
+  if (bm.BIC > 0) {
     ctx.globalAlpha = 1;
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    const badgeSize = Math.max(16, cs * 0.4);
+    const badgeR = Math.max(11, Math.min(cs * 0.45, cs * 0.32 * Math.sqrt(positions.length)));
+    const badgeGrad = ctx.createRadialGradient(bboxCenterX, bboxCenterY - badgeR * 0.2, badgeR * 0.1, bboxCenterX, bboxCenterY, badgeR);
+    badgeGrad.addColorStop(0, 'rgba(245, 250, 255, 0.95)');
+    badgeGrad.addColorStop(0.7, 'rgba(200, 230, 255, 0.85)');
+    badgeGrad.addColorStop(1, 'rgba(140, 200, 240, 0.7)');
+    ctx.fillStyle = badgeGrad;
     ctx.beginPath();
-    ctx.arc(px + cs/2, py + cs/2, badgeSize/2, 0, Math.PI*2);
+    ctx.arc(bboxCenterX, bboxCenterY, badgeR, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = darken(color, 0.3);
-    ctx.font = `bold ${Math.max(11, cs*0.3)}px sans-serif`;
+    ctx.strokeStyle = 'rgba(80, 140, 200, 0.7)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.fillStyle = '#1a3a6a';
+    ctx.font = `bold ${Math.max(11, badgeR * 0.95)}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(String(bm.BIC), px + cs/2, py + cs/2);
+    ctx.fillText(String(bm.BIC), bboxCenterX, bboxCenterY);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // Direction-lock arrow at bounding-box center when no ice badge is occupying it.
+  if (bm.BAD > 0 && bm.BIC <= 0) {
+    ctx.globalAlpha = 1;
+    const arrowSize = Math.max(14, cs * 0.55);
+    ctx.font = `bold ${arrowSize}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    const glyph = bm.BAD === 1 ? '↔' : '↕';
+    ctx.fillText(glyph, bboxCenterX + 1, bboxCenterY + 1);
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    ctx.fillText(glyph, bboxCenterX, bboxCenterY);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
   }
@@ -210,16 +267,45 @@ export function renderLevel() {
   const gx = (x) => (x - offX) * cellSize + ox;
   const gy = (y) => (gridH - 1 - (y - offY)) * cellSize + oy;
 
-  // Background
-  ctx.fillStyle = '#161628';
+  // Background — BlockOut deep purple-black
+  ctx.fillStyle = '#1c0e3c';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // Grid
   if (showGrid) {
-    ctx.strokeStyle = '#2a2a44';
+    ctx.strokeStyle = '#3b2a72';
     ctx.lineWidth = 0.5;
     for (let x = 0; x <= gridW; x++) { ctx.beginPath(); ctx.moveTo(ox + x*cellSize, oy); ctx.lineTo(ox + x*cellSize, oy + gridH*cellSize); ctx.stroke(); }
     for (let y = 0; y <= gridH; y++) { ctx.beginPath(); ctx.moveTo(ox, oy + y*cellSize); ctx.lineTo(ox + gridW*cellSize, oy + y*cellSize); ctx.stroke(); }
+  }
+
+  // ─── PHOTO-FRAME (filled lavender-white pad around the playable area, BlockOut-style) ───
+  // Implemented as a FILLED rounded rect underneath. Cells render on top and cover the
+  // center, leaving the visible frame as a "padding" band around the board — matching
+  // the GDD MVP's `.board-frame { padding: 14px; background: #fff }` approach.
+  // Stashed bbox for the protruding gate bars below.
+  let frameBbox = null;
+  if (showLayer === 'all' || showLayer === 'cells' || showLayer === 'doors') {
+    let fxMin = Infinity, fxMax = -Infinity, fyMin = Infinity, fyMax = -Infinity;
+    const visit = (p) => { if (p.x < fxMin) fxMin = p.x; if (p.x > fxMax) fxMax = p.x; if (p.y < fyMin) fyMin = p.y; if (p.y > fyMax) fyMax = p.y; };
+    (state.currentLevel.CMS || []).forEach(c => visit(c.BPM));
+    (state.currentLevel.DMS || []).forEach(d => (d.BPMS || []).forEach(visit));
+    if (fxMin !== Infinity) {
+      const framePad = Math.max(6, Math.round(cellSize * 0.18));
+      const fx = gx(fxMin) - framePad;
+      const fy = gy(fyMax) - framePad;
+      const fw = (fxMax - fxMin + 1) * cellSize + framePad * 2;
+      const fh = (fyMax - fyMin + 1) * cellSize + framePad * 2;
+      // Outer frame (lavender-white)
+      ctx.fillStyle = '#f3eeff';
+      roundRect(ctx, fx, fy, fw, fh, framePad * 0.55);
+      ctx.fill();
+      // Inner well — restore the bg color so 1px gaps between cells don't reveal frame white.
+      ctx.fillStyle = '#1c0e3c';
+      roundRect(ctx, fx + framePad, fy + framePad, fw - framePad * 2, fh - framePad * 2, 4);
+      ctx.fill();
+      frameBbox = { fxMin, fxMax, fyMin, fyMax, framePad };
+    }
   }
 
   // ─── CELLS ───
@@ -228,12 +314,12 @@ export function renderLevel() {
       const p = cm.BPM;
       const x = gx(p.x), y = gy(p.y);
       const grad = ctx.createLinearGradient(x, y, x, y + cellSize);
-      grad.addColorStop(0, '#28284a');
-      grad.addColorStop(1, '#20203c');
+      grad.addColorStop(0, '#5239a3');
+      grad.addColorStop(1, '#3b2a72');
       ctx.fillStyle = grad;
       roundRect(ctx, x+1, y+1, cellSize-2, cellSize-2, 3);
       ctx.fill();
-      ctx.strokeStyle = '#343458';
+      ctx.strokeStyle = '#6a4ebd';
       ctx.lineWidth = 0.5;
       ctx.stroke();
     });
@@ -342,6 +428,58 @@ export function renderLevel() {
       const ay = (y) => gy(y) + offY;
       drawBlock({ BCT: anim.ghostBCT, BPMS: anim.ghostBPMS }, ax, ay, 1 - anim.t * 0.4);
     }
+
+    // ─── DRAFT CELLS (custom-shape draw mode overlay) ───
+    if (state.drawMode && state.draftCells.length > 0) {
+      state.draftCells.forEach(([dx, dy]) => {
+        const x = gx(dx), y = gy(dy);
+        ctx.fillStyle = 'rgba(167, 139, 250, 0.32)';
+        roundRect(ctx, x + 2, y + 2, cellSize - 4, cellSize - 4, 4);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+    }
+  }
+
+  // ─── EDGE SLOTS (door-tool affordance: dashed slots outside each edge cell) ───
+  if (state.editMode === 'design' && state.activeTool === 'door' && (showLayer === 'all' || showLayer === 'doors')) {
+    const cellSet = new Set((state.currentLevel.CMS || []).map(c => `${c.BPM.x},${c.BPM.y}`));
+    const doorSet = new Set();
+    (state.currentLevel.DMS || []).forEach(dm => (dm.BPMS || []).forEach(p => doorSet.add(`${p.x},${p.y}`)));
+    // Out-direction in game coords: dy=+1 means visually UP (game y is +up).
+    const dirs = [
+      { dx: 0, dy: 1 },   // top
+      { dx: 0, dy: -1 },  // bottom
+      { dx: -1, dy: 0 },  // left
+      { dx: 1, dy: 0 },   // right
+    ];
+    const slotOut = 0.85, slotShort = 0.8, slotGap = 0.05;
+    (state.currentLevel.CMS || []).forEach(cm => {
+      const cx = cm.BPM.x, cy = cm.BPM.y;
+      if (doorSet.has(`${cx},${cy}`)) return;
+      const x = gx(cx), y = gy(cy);
+      for (const d of dirs) {
+        const nkey = `${cx + d.dx},${cy + d.dy}`;
+        if (cellSet.has(nkey) || doorSet.has(nkey)) continue;
+        let sx, sy, sw, sh;
+        if (d.dy === 1)       { sx = x;                          sy = y - cellSize * slotOut;        sw = cellSize;            sh = cellSize * slotShort; }
+        else if (d.dy === -1) { sx = x;                          sy = y + cellSize + cellSize*slotGap; sw = cellSize;            sh = cellSize * slotShort; }
+        else if (d.dx === -1) { sx = x - cellSize * slotOut;      sy = y;                            sw = cellSize * slotShort; sh = cellSize; }
+        else                  { sx = x + cellSize + cellSize*slotGap; sy = y;                        sw = cellSize * slotShort; sh = cellSize; }
+        ctx.fillStyle = 'rgba(167, 139, 250, 0.16)';
+        roundRect(ctx, sx, sy, sw, sh, 4);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(155, 180, 255, 0.55)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    });
   }
 
   // ─── CURTAIN LOCKS (drape over blocks while CLC > 0; vanish at 0) ───
@@ -513,6 +651,54 @@ export function renderLevel() {
         if (dm.TBD > 0) label += `T${dm.TBD}`;
         if (label) ctx.fillText(label, gx(p.x)+4, gy(p.y)+cellSize-4);
       }
+    });
+
+    // ─── PROTRUDING GATE BARS ───
+    // Each door cell gets a colored bar OUTSIDE the cell on the void side that
+    // exactly fills the frame pad — visually the gate is carved into the frame,
+    // like the real BlockOut UI.
+    const cmsSet = new Set();
+    (state.currentLevel.CMS || []).forEach(c => cmsSet.add(`${c.BPM.x},${c.BPM.y}`));
+    const dmsSet = new Set();
+    (state.currentLevel.DMS || []).forEach(dm => (dm.BPMS || []).forEach(p => dmsSet.add(`${p.x},${p.y}`)));
+    // Bar thickness matches the frame pad so the door reads as flush with the frame.
+    const barThick = frameBbox ? frameBbox.framePad : Math.max(6, Math.round(cellSize * 0.18));
+    (state.currentLevel.DMS || []).forEach(dm => {
+      const dColor = COLORS[String(dm.BCT)]?.hex || '#888';
+      (dm.BPMS || []).forEach(p => {
+        const dirs = [
+          { dx: 0, dy:  1, side: 'top' },
+          { dx: 0, dy: -1, side: 'bottom' },
+          { dx: -1, dy: 0, side: 'left' },
+          { dx:  1, dy: 0, side: 'right' },
+        ];
+        for (const d of dirs) {
+          const nkey = `${p.x + d.dx},${p.y + d.dy}`;
+          if (cmsSet.has(nkey) || dmsSet.has(nkey)) continue;
+          const barInset = 2;
+          const x = gx(p.x), y = gy(p.y);
+          let bx, by, bw, bh;
+          if (d.side === 'top')         { bx = x + barInset; by = y - barThick;          bw = cellSize - barInset*2; bh = barThick; }
+          else if (d.side === 'bottom') { bx = x + barInset; by = y + cellSize;          bw = cellSize - barInset*2; bh = barThick; }
+          else if (d.side === 'left')   { bx = x - barThick;          by = y + barInset; bw = barThick;              bh = cellSize - barInset*2; }
+          else                          { bx = x + cellSize;          by = y + barInset; bw = barThick;              bh = cellSize - barInset*2; }
+          ctx.fillStyle = dColor;
+          roundRect(ctx, bx, by, bw, bh, Math.max(2, barThick * 0.25));
+          ctx.fill();
+          // Tiny white arrow pointing OUT through the door (the exit direction)
+          const cxA = bx + bw / 2, cyA = by + bh / 2;
+          const ts = barThick * 0.4;
+          ctx.fillStyle = 'rgba(255,255,255,0.92)';
+          ctx.beginPath();
+          if (d.side === 'top')    { ctx.moveTo(cxA, cyA - ts); ctx.lineTo(cxA - ts*0.75, cyA + ts*0.4); ctx.lineTo(cxA + ts*0.75, cyA + ts*0.4); }
+          if (d.side === 'bottom') { ctx.moveTo(cxA, cyA + ts); ctx.lineTo(cxA - ts*0.75, cyA - ts*0.4); ctx.lineTo(cxA + ts*0.75, cyA - ts*0.4); }
+          if (d.side === 'left')   { ctx.moveTo(cxA - ts, cyA); ctx.lineTo(cxA + ts*0.4, cyA - ts*0.75); ctx.lineTo(cxA + ts*0.4, cyA + ts*0.75); }
+          if (d.side === 'right')  { ctx.moveTo(cxA + ts, cyA); ctx.lineTo(cxA - ts*0.4, cyA - ts*0.75); ctx.lineTo(cxA - ts*0.4, cyA + ts*0.75); }
+          ctx.closePath();
+          ctx.fill();
+          break;
+        }
+      });
     });
   }
 

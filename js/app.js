@@ -4,19 +4,19 @@ import { setupPanZoom, zoomIn, zoomOut, zoomFit, mouseToGrid } from './interacti
 import { renderLevel } from './render.js';
 import {
   switchTab, buildLegend, updateInfoPanel, updateJsonPanel,
-  selectBlock, updateSelectionPanel, editProp, editDoorProp, editCurtainProp,
+  selectBlock, editProp, editDoorProp, editCurtainProp,
   doorMeltIce, doorResetIce, doorToggleStar, doorToggleTurn,
   removeCellFromElement, deleteSelected
 } from './panels.js';
-import { switchEditMode, setTool, setColor, exportLevel, showViolation, initDesign } from './design.js';
+import { switchEditMode, setTool, setColor, setShape, enterDrawMode, commitDraftBlock, cancelDraftBlock, exportLevel, showViolation, initDesign } from './design.js';
 import {
   cloneCurrentLevel, confirmClone, closeCloneModal,
   createBlankLevel, confirmNewLevel, closeNewLevelModal,
   updateNewLevelPreview, importLevelFromFile, updateModeToggleVisibility,
   initCustomLevels
 } from './custom-levels.js';
-import { playStart, playReset, playStop, refreshPlayButtons } from './play-ui.js';
-import { stopGame } from './game.js';
+import { playStart, playReset, playStop, refreshPlayButtons, tickAnim, updateHUD } from './play-ui.js';
+import { stopGame, isPlaying, trySlide } from './game.js';
 
 // ── Wire up lazy dependencies ──
 initDesign(mouseToGrid, zoomFit);
@@ -27,6 +27,7 @@ initSidebar(loadLevel);
 Object.assign(window, {
   setFilter, switchEditMode, createBlankLevel, cloneCurrentLevel,
   importLevelFromFile, exportLevel, setTool, setColor,
+  setShape, enterDrawMode, commitDraftBlock, cancelDraftBlock,
   zoomIn, zoomOut, zoomFit, switchTab,
   closeNewLevelModal, confirmNewLevel, updateNewLevelPreview,
   closeCloneModal, confirmClone,
@@ -56,15 +57,55 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
+  // ── Play-mode movement (WASD + arrows) ─────────────────────────────
+  // Slides the currently selected block all the way in the chosen direction,
+  // mirroring real-game swipe behavior. Game Y is +up (see mouseToGrid flip).
+  if (isPlaying()) {
+    const DIR = {
+      w: [0, 1],  W: [0, 1],  ArrowUp: [0, 1],
+      s: [0, -1], S: [0, -1], ArrowDown: [0, -1],
+      a: [-1, 0], A: [-1, 0], ArrowLeft: [-1, 0],
+      d: [1, 0],  D: [1, 0],  ArrowRight: [1, 0],
+    };
+    if (DIR[e.key]) {
+      e.preventDefault();
+      const sel = state.selectedElement;
+      if (sel?.type !== 'block') {
+        showViolation('请先点选一个方块');
+        return;
+      }
+      const [dx, dy] = DIR[e.key];
+      const res = trySlide(sel.index, dx, dy);
+      if (res.moved > 0) {
+        // After exit/win/fail the block index is gone — drop selection.
+        if (res.exited || res.win || res.fail) state.selectedElement = null;
+        tickAnim();
+        updateHUD();
+        updateInfoPanel();
+        updateJsonPanel();
+      } else if (res.reason) {
+        showViolation(res.reason);
+      }
+      return;
+    }
+  }
+
+  // Arrow keys are reserved for play-mode movement (handled above). When not
+  // playing, swallow them so they don't switch levels — that conflicts with
+  // the natural "arrow = move" expectation. Level nav lives on PageUp/PageDown.
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    return;
+  }
+
   // Level navigation & zoom
   const items = [...document.querySelectorAll('.level-item:not([style*="display: none"])')];
   const activeIdx = items.findIndex(i => i.classList.contains('active'));
 
   switch(e.key) {
-    case 'ArrowDown':
+    case 'PageDown':
       if (activeIdx < items.length - 1) { items[activeIdx+1].click(); items[activeIdx+1].scrollIntoView({block:'nearest'}); }
       e.preventDefault(); break;
-    case 'ArrowUp':
+    case 'PageUp':
       if (activeIdx > 0) { items[activeIdx-1].click(); items[activeIdx-1].scrollIntoView({block:'nearest'}); }
       e.preventDefault(); break;
     case '=': case '+': zoomIn(); e.preventDefault(); break;
@@ -88,6 +129,8 @@ document.getElementById('show-grid').addEventListener('change', renderLevel);
 async function loadLevel(seedId) {
   if (state.game) stopGame();
   refreshPlayButtons();
+  // Drop any draft from the previous level
+  if (state.drawMode) cancelDraftBlock();
   const custom = state.customLevels.find(c => c.seedId === seedId);
   try {
     if (custom) {

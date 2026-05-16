@@ -160,6 +160,39 @@ export function confirmNewLevel() {
   _zoomFit();
 }
 
+// Clone a custom level directly from the sidebar (no modal — auto-named "{name}-copy").
+// Default (Unity) levels still use the toolbar Clone button which opens the rename modal.
+export function cloneCustomLevelInline(seedId) {
+  const orig = state.customLevels.find(c => c.seedId === seedId);
+  if (!orig) return;
+  const cloneSeedId = `custom-${Date.now()}`;
+  const entry = {
+    seedId: cloneSeedId,
+    name: `${orig.name}-copy`,
+    difficulty: orig.difficulty,
+    data: JSON.parse(JSON.stringify(orig.data)),
+  };
+  state.customLevels.push(entry);
+  addCustomLevelToSidebar(entry);
+  autoSave();
+  if (_loadLevel) _loadLevel(cloneSeedId);
+}
+
+export function deleteCustomLevel(seedId) {
+  const idx = state.customLevels.findIndex(c => c.seedId === seedId);
+  if (idx < 0) return;
+  const entry = state.customLevels[idx];
+  if (!confirm(`删除自定义关卡 "${entry.name}"？此操作无法撤销。`)) return;
+  state.customLevels.splice(idx, 1);
+  autoSave();
+  const row = document.querySelector(`.level-item[data-seed-id="${CSS.escape(seedId)}"]`);
+  if (row) row.remove();
+  if (state.currentLevelId === seedId && _loadLevel) {
+    const first = state.levelsConfig[0];
+    if (first) _loadLevel(first.seedId);
+  }
+}
+
 export function importLevelFromFile() {
   const input = document.createElement('input');
   input.type = 'file';

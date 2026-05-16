@@ -1,4 +1,5 @@
 import { state } from './state.js';
+import { cloneCustomLevelInline, deleteCustomLevel } from './custom-levels.js';
 
 // loadLevel is imported lazily to avoid circular deps — set via initSidebar
 let _loadLevel = null;
@@ -72,7 +73,22 @@ export function addCustomLevelToSidebar(entry) {
       <span class="li-num" style="color:var(--accent-bright)">✎</span>
       <span class="li-name">${entry.name}</span>
     </div>
-    <div class="li-badges"><span class="badge" style="background:rgba(91,124,247,.15);color:var(--accent-bright)">自定义</span>${diffBadge}</div>`;
-  item.onclick = () => _loadLevel(entry.seedId);
+    <div class="li-actions">
+      <button class="li-action-btn" data-act="clone" title="克隆">＋</button>
+      <button class="li-action-btn li-action-danger" data-act="delete" title="删除">×</button>
+    </div>
+    <div class="li-badges"><span class="badge" style="background:rgba(167,139,250,.15);color:var(--accent-bright)">自定义</span>${diffBadge}</div>`;
+  item.addEventListener('click', (e) => {
+    if (e.target.closest('.li-actions')) return;
+    _loadLevel(entry.seedId);
+  });
+  item.querySelector('[data-act="clone"]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    cloneCustomLevelInline(entry.seedId);
+  });
+  item.querySelector('[data-act="delete"]').addEventListener('click', (e) => {
+    e.stopPropagation();
+    deleteCustomLevel(entry.seedId);
+  });
   list.insertBefore(item, list.firstChild);
 }

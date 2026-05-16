@@ -42,7 +42,7 @@
         <button class="mode-btn" data-mode="design" onclick="switchEditMode('design')">设计模式</button>
       </div>
       <div class="tb-play" style="display:flex;gap:6px;align-items:center;margin-left:8px">
-        <button class="tb-action-btn primary" id="btn-play" onclick="playStart()" title="开始试玩 (按方块拖出方向滑动)">▶ 试玩</button>
+        <button class="tb-action-btn primary" id="btn-play" onclick="playStart()" title="开始试玩 — 点选方块 → WASD/方向键滑动，或直接拖拽">▶ 试玩</button>
         <button class="tb-action-btn" id="btn-reset" style="display:none" onclick="playReset()" title="重置回开局">↺ 重置</button>
         <button class="tb-action-btn" id="btn-stop" style="display:none" onclick="playStop()" title="退出试玩">■ 退出</button>
       </div>
@@ -102,6 +102,21 @@
             <button class="color-swatch"        data-color="9" style="background:#00b894" title="DarkGreen (9)" onclick="setColor(9,this)"></button>
           </span>
           <input type="hidden" id="place-color" value="0">
+          <span class="shape-palette" id="shape-palette">
+            <button class="shape-btn active" data-shape="1x1" title="1×1"  onclick="setShape('1x1',this)">1×1</button>
+            <button class="shape-btn"        data-shape="2x2" title="2×2"  onclick="setShape('2x2',this)">2×2</button>
+            <button class="shape-btn"        data-shape="3x3" title="3×3"  onclick="setShape('3x3',this)">3×3</button>
+            <button class="shape-btn"        data-shape="L"   title="L 形" onclick="setShape('L',this)">L</button>
+            <button class="shape-btn"        data-shape="T"   title="T 形" onclick="setShape('T',this)">T</button>
+            <button class="shape-btn"        data-shape="I-h" title="水平长条 (自动 BAD=1)" onclick="setShape('I-h',this)">━━</button>
+            <button class="shape-btn"        data-shape="I-v" title="垂直长条 (自动 BAD=2)" onclick="setShape('I-v',this)">┃</button>
+            <button class="shape-btn"        data-shape="+"   title="十字" onclick="setShape('+',this)">＋</button>
+            <button class="shape-btn shape-btn-draw" id="shape-draw-btn" title="自定义形状（点格子勾选 → ✓ 完成）" onclick="enterDrawMode()">✏️</button>
+          </span>
+          <span id="draw-mode-bar" style="display:none;gap:4px;align-items:center;margin-left:4px">
+            <button class="tb-action-btn primary" id="draw-commit-btn" onclick="commitDraftBlock()">✓ 完成 (<span id="draft-count">0</span>)</button>
+            <button class="tb-action-btn" onclick="cancelDraftBlock()">取消</button>
+          </span>
           <span id="ice-tool-opts" style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
             <label style="font-size:11px;color:var(--text-dim)">冰冻</label>
             <input type="number" id="place-ice" min="0" max="10" value="0" style="width:40px;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px;border-radius:4px;font-size:11px">
@@ -118,6 +133,7 @@
         <div class="hud-pill"><span class="hud-key">步数</span><span class="hud-val" id="hud-moves">0</span></div>
         <div class="hud-pill"><span class="hud-key">剩余</span><span class="hud-val" id="hud-remaining">0</span></div>
         <div class="hud-pill" id="hud-keys" style="display:none"><span class="hud-key">钥匙</span><span class="hud-val" id="hud-keys-val"></span></div>
+        <div class="hud-pill hud-hint"><span class="hud-key">操作</span><span class="hud-val">点选 · <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / 方向键</span></div>
         <div id="hud-banner" style="display:none"></div>
       </div>
     </div>
@@ -188,12 +204,13 @@
       <div class="legend-section">
         <h4>快捷键</h4>
         <div style="font-size:11px; color:var(--text-dim); line-height:1.8">
-          <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">Up/Down</kbd> 切换关卡</div>
+          <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">PageUp</kbd>/<kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">PageDown</kbd> 切换关卡</div>
           <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">+/-</kbd> 缩放</div>
           <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">0</kbd> 适应视图</div>
           <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">G</kbd> 切换网格</div>
           <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">L</kbd> 切换标注</div>
           <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">Del</kbd> 删除选中元素</div>
+          <div><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">W</kbd><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">A</kbd><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">S</kbd><kbd style="background:var(--bg-card);padding:1px 5px;border-radius:3px;border:1px solid var(--border)">D</kbd> / 方向键 试玩中滑动选中方块</div>
           <div>鼠标拖拽平移 / 滚轮缩放</div>
           <div>悬停查看信息 / 点击选中编辑</div>
         </div>

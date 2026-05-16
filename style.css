@@ -1,20 +1,25 @@
 :root {
-  --bg-darkest: #1a1a2e;
-  --bg-dark: #1f1f35;
-  --bg-panel: #24243d;
-  --bg-card: #2a2a45;
-  --bg-hover: #32324f;
-  --border: #363654;
-  --border-light: #45456a;
-  --accent: #5b7cf7;
-  --accent-bright: #7b9cff;
-  --accent-hot: #e87da0;
-  --text: #e2e4ea;
-  --text-dim: #8b8da5;
-  --text-muted: #5c5e76;
-  --success: #4ecdc4;
-  --warning: #f7c948;
-  --danger: #e85d75;
+  /* BlockOut "暗黑霓虹" palette — deep purple base + lavender accents.
+     Lifted from BlockOut GDD reference (editor/index.html). */
+  --bg-darkest: #1c0e3c;
+  --bg-dark: #2a1e55;
+  --bg-panel: #3b2a72;
+  --bg-card: #4d3990;
+  --bg-hover: #5b46a8;
+  --border: #6a4ebd;
+  --border-light: #8b6dd4;
+  --accent: #a78bfa;
+  --accent-bright: #c4adff;
+  --accent-hot: #ff7da6;
+  --text: #f3eeff;
+  --text-dim: #c5b9e8;
+  --text-muted: #7a6ca3;
+  --success: #6effb8;
+  --warning: #ffc83b;
+  --danger: #ff5fa8;
+  /* Board frame (photo-frame border around the playable area in the canvas) */
+  --frame-color: #f3eeff;
+  --frame-thickness: 14px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: var(--bg-darkest); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 13px; letter-spacing: 0.01em; }
@@ -44,7 +49,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
   flex: 1; padding: 7px 10px; background: var(--bg-darkest); border: 1px solid var(--border);
   color: var(--text); border-radius: 6px; font-size: 12px; outline: none; transition: border-color .2s;
 }
-#search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(91,124,247,.15); }
+#search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(167,139,250,.15); }
 .filter-btns { display: flex; gap: 3px; }
 .filter-btn {
   padding: 4px 8px; font-size: 10px; border: 1px solid transparent; background: transparent;
@@ -60,7 +65,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
   font-size: 11px; transition: background .12s;
 }
 .level-item:hover { background: var(--bg-hover); }
-.level-item.active { background: rgba(91,124,247,.15); border-left: 2px solid var(--accent); }
+.level-item.active { background: rgba(167,139,250,.15); border-left: 2px solid var(--accent); }
 .level-item .li-left { display: flex; align-items: center; gap: 8px; }
 .level-item .li-num { font-weight: 600; font-size: 10px; color: var(--text-dim); min-width: 24px; font-variant-numeric: tabular-nums; }
 .level-item.active .li-num { color: var(--accent-bright); }
@@ -75,6 +80,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
   width: 32px; height: 24px; border-radius: 3px; background: var(--bg-darkest);
   border: 1px solid var(--border); overflow: hidden; flex-shrink: 0;
 }
+.level-item .li-actions {
+  display: flex; gap: 2px; margin-left: auto; padding-right: 4px;
+  opacity: 0; transition: opacity .12s;
+}
+.level-item:hover .li-actions,
+.level-item.active .li-actions { opacity: 1; }
+.li-action-btn {
+  width: 18px; height: 18px; padding: 0;
+  background: rgba(0,0,0,0.28); color: var(--text);
+  border: 1px solid transparent; border-radius: 3px;
+  font-size: 12px; line-height: 1; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: background .12s;
+}
+.li-action-btn:hover { background: var(--accent); color: #fff; }
+.li-action-btn.li-action-danger:hover { background: var(--danger); color: #fff; }
 
 #stats-bar {
   padding: 8px 12px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-dim);
@@ -147,8 +168,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
 }
 .tool-btn:hover { background: var(--bg-hover); color: var(--text); }
 .tool-btn.active {
-  background: rgba(91,124,247,.15); color: var(--accent-bright);
-  border-color: rgba(91,124,247,.3);
+  background: rgba(167,139,250,.15); color: var(--accent-bright);
+  border-color: rgba(167,139,250,.3);
 }
 .tool-dot {
   display: inline-block; width: 12px; height: 12px;
@@ -199,6 +220,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
 }
 .modal-actions button.primary:hover { background: var(--accent-bright); }
 
+/* ─── Shape Palette ─── */
+.shape-palette { display: inline-flex; gap: 2px; align-items: center; padding: 2px 4px; background: var(--bg-card); border-radius: 5px; }
+.shape-btn {
+  min-width: 26px; height: 22px; padding: 0 6px;
+  background: transparent; color: var(--text-dim);
+  border: 1px solid transparent; border-radius: 3px;
+  font-size: 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 500; line-height: 1; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.1s;
+}
+.shape-btn:hover { background: var(--bg-hover); color: var(--text); }
+.shape-btn.active {
+  background: rgba(167,139,250,.2); color: var(--accent-bright);
+  border-color: rgba(167,139,250,.4);
+}
+.shape-btn-draw { font-size: 12px; padding: 0 5px; }
+
 /* ─── Color Swatches ─── */
 .color-swatches { display: inline-flex; gap: 3px; align-items: center; padding: 2px 4px; background: var(--bg-card); border-radius: 5px; }
 .color-swatch {
@@ -219,7 +258,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
 /* Canvas area */
 #canvas-area {
   flex: 1; overflow: hidden; position: relative; display: flex;
-  background: #161628;
+  background: var(--bg-darkest);
 }
 #canvas-wrap {
   flex: 1; overflow: auto; position: relative; cursor: default;
@@ -242,6 +281,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
 }
 .hud-pill .hud-key { color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
 .hud-pill .hud-val { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.hud-pill.hud-hint .hud-val { font-weight: 500; display: inline-flex; align-items: center; gap: 4px; }
+.hud-pill.hud-hint kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 3px; font-family: inherit; font-size: 10px; font-weight: 600;
+  color: var(--text); line-height: 1;
+}
 #hud-banner {
   position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
   background: rgba(20, 20, 35, 0.95); border: 2px solid var(--success);
