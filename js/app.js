@@ -58,8 +58,8 @@ document.addEventListener('keydown', (e) => {
   }
 
   // ── Play-mode movement (WASD + arrows) ─────────────────────────────
-  // Slides the currently selected block all the way in the chosen direction,
-  // mirroring real-game swipe behavior. Game Y is +up (see mouseToGrid flip).
+  // Arrow keys: cell-by-cell step (one cell per press). Hold Shift = full swipe.
+  // WASD: full swipe to wall (mirrors swipe gesture for keyboard ergonomics).
   if (isPlaying()) {
     const DIR = {
       w: [0, 1],  W: [0, 1],  ArrowUp: [0, 1],
@@ -75,9 +75,11 @@ document.addEventListener('keydown', (e) => {
         return;
       }
       const [dx, dy] = DIR[e.key];
-      const res = trySlide(sel.index, dx, dy);
+      // Arrow keys = single-cell step unless Shift held; WASD = full swipe.
+      const isArrow = e.key.startsWith('Arrow');
+      const maxSteps = isArrow && !e.shiftKey ? 1 : 200;
+      const res = trySlide(sel.index, dx, dy, maxSteps);
       if (res.moved > 0) {
-        // After exit/win/fail the block index is gone — drop selection.
         if (res.exited || res.win || res.fail) state.selectedElement = null;
         tickAnim();
         updateHUD();
@@ -167,6 +169,12 @@ async function loadLevel(seedId) {
     updateInfoPanel();
     updateJsonPanel();
     zoomFit();
+    // Auto-enter play mode for read-only levels so the user can play immediately.
+    // Skip auto-play for custom levels (they're being edited) and levels without
+    // blocks (nothing to play with).
+    if (!state.isCustomLevel && (state.currentLevel.BMS || []).length > 0) {
+      playStart();
+    }
   } catch(e) {
     console.error('Failed to load level:', seedId, e);
   }

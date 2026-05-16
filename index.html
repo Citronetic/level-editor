@@ -44,7 +44,7 @@
         <button class="mode-btn" data-mode="design" onclick="switchEditMode('design')">设计模式</button>
       </div>
       <div class="tb-play" style="display:flex;gap:6px;align-items:center;margin-left:8px">
-        <button class="tb-action-btn primary" id="btn-play" onclick="playStart()" title="开始试玩 — 点选方块 → WASD/方向键滑动，或直接拖拽">▶ 试玩</button>
+        <button class="tb-action-btn primary" id="btn-play" onclick="playStart()" title="开始试玩 — 点选方块 → 方向键单格 / WASD 一推到底 / 直接拖拽">▶ 试玩</button>
         <button class="tb-action-btn" id="btn-reset" style="display:none" onclick="playReset()" title="重置回开局">↺ 重置</button>
         <button class="tb-action-btn" id="btn-stop" style="display:none" onclick="playStop()" title="退出试玩">■ 退出</button>
       </div>
@@ -135,7 +135,7 @@
         <div class="hud-pill"><span class="hud-key">步数</span><span class="hud-val" id="hud-moves">0</span></div>
         <div class="hud-pill"><span class="hud-key">剩余</span><span class="hud-val" id="hud-remaining">0</span></div>
         <div class="hud-pill" id="hud-keys" style="display:none"><span class="hud-key">钥匙</span><span class="hud-val" id="hud-keys-val"></span></div>
-        <div class="hud-pill hud-hint"><span class="hud-key">操作</span><span class="hud-val">点选 · <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / 方向键</span></div>
+        <div class="hud-pill hud-hint"><span class="hud-key">操作</span><span class="hud-val">点选 · 方向键单格 · <kbd>WASD</kbd> / Shift+方向键 滑到底</span></div>
         <div id="hud-banner" style="display:none"></div>
       </div>
     </div>

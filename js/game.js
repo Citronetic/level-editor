@@ -144,7 +144,7 @@ function checkExitAfterStep(bm, dirX, dirY, doorByCell) {
 
 // ── slide ──────────────────────────────────────────────────────────────────
 
-export function trySlide(blockIdx, dirX, dirY) {
+export function trySlide(blockIdx, dirX, dirY, maxSteps = 200) {
   const g = state.game;
   if (!g || g.status !== 'playing') return { moved: 0, reason: '游戏未激活' };
   if ((dirX === 0) === (dirY === 0)) return { moved: 0, reason: '需要直线方向' };
@@ -170,8 +170,10 @@ export function trySlide(blockIdx, dirX, dirY) {
   let exited = false;
   let curtainHitIdx = -1;
 
-  // hard cap
-  for (let safety = 0; safety < 200; safety++) {
+  // Step until blocked OR maxSteps reached. Default 200 = effectively unlimited
+  // (full swipe-style slide). Pass maxSteps=1 for arrow-key cell-by-cell mode.
+  const cap = Math.max(1, Math.min(200, maxSteps | 0));
+  for (let safety = 0; safety < cap; safety++) {
     const cur = bm.BPMS;
     const next = cur.map(p => ({ x: p.x + dirX, y: p.y + dirY }));
 
