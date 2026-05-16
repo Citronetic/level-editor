@@ -168,7 +168,6 @@ export function trySlide(blockIdx, dirX, dirY, maxSteps = 200) {
   const lookups = buildLookups(lvl, blockIdx);
   let totalSteps = 0;
   let exited = false;
-  let curtainHitIdx = -1;
 
   // Step until blocked OR maxSteps reached. Default 200 = effectively unlimited
   // (full swipe-style slide). Pass maxSteps=1 for arrow-key cell-by-cell mode.
@@ -193,9 +192,8 @@ export function trySlide(blockIdx, dirX, dirY, maxSteps = 200) {
       } else if (!lookups.cellSet.has(k)) {
         blocked = true; break;                 // not floor and not door → void
       }
-      // curtain
+      // curtain — blocks the swipe; decrement happens later on exit, not here.
       if (lookups.curtainByCell.has(k)) {
-        curtainHitIdx = lookups.curtainByCell.get(k).idx;
         blocked = true; break;
       }
       // other block
@@ -212,13 +210,10 @@ export function trySlide(blockIdx, dirX, dirY, maxSteps = 200) {
     if (exitDoor) { exited = true; break; }
   }
 
-  // Hit-curtain side effect — decrement on EVERY swipe that bumps a curtain,
-  // regardless of how many cells the block managed to travel before hitting it.
-  // This matches the intuitive "swipe taps the curtain once → CLC -= 1" model.
-  if (curtainHitIdx >= 0) {
-    const cl = lvl.CLMS[curtainHitIdx];
-    if (cl && cl.CLC > 0) cl.CLC -= 1;
-  }
+  // Note: curtains do NOT decrement on bump. They decrement on every successful
+  // block EXIT, in lockstep with BIC (block ice) and DIC (door ice) — see the
+  // exit-bookkeeping block below. This mirrors the in-game rule "cover specified
+  // cells until N pieces exit".
 
   if (totalSteps === 0) return { moved: 0, reason: '无法移动' };
 
@@ -265,10 +260,11 @@ export function trySlide(blockIdx, dirX, dirY, maxSteps = 200) {
     if ((bm.KID || 0) > 0) g.collectedKeys.add(bm.KID);
     lvl.BMS.splice(blockIdx, 1);
 
-    // tick all remaining block ice
+    // Every successful exit globally ticks: block ice (BIC), door ice (DIC),
+    // and curtain locks (CLC) — all three in lockstep. Mirrors commitDrag.
     lvl.BMS.forEach(b => { if ((b.BIC || 0) > 0) b.BIC -= 1; });
-    // tick all door ice
     (lvl.DMS || []).forEach(dm => { if ((dm.DIC || 0) > 0) dm.DIC -= 1; });
+    (lvl.CLMS || []).forEach(cl => { if ((cl.CLC || 0) > 0) cl.CLC -= 1; });
   }
 
   syncDoorStates();
@@ -406,13 +402,8 @@ export function commitDrag(blockIdx, origBPMS, curtainHitIdx) {
   const dx = bm.BPMS[0].x - origBPMS[0].x;
   const dy = bm.BPMS[0].y - origBPMS[0].y;
 
-  // Curtain bump → decrement that curtain once, regardless of whether the
-  // block actually moved. Match trySlide's swipe semantics.
-  if (curtainHitIdx >= 0) {
-    const cl = lvl.CLMS?.[curtainHitIdx];
-    if (cl && (cl.CLC || 0) > 0) cl.CLC -= 1;
-  }
-
+  // Curtains do not tick on bump — they tick on EXIT, in lockstep with BIC/DIC.
+  // See the exit-bookkeeping block below.
   if (dx === 0 && dy === 0) return { moved: 0, curtainBumped: curtainHitIdx >= 0 };
 
   // After a chained drag the final direction is ambiguous, so check every
