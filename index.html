@@ -12,12 +12,14 @@
 <div id="sidebar">
   <div class="sidebar-header">
     <h1>LEVEL EDITOR</h1>
-    <p>Match-3 Puzzle Game &mdash; 538 Levels</p>
+    <p>BlockOut + Color Block Jam &mdash; <span id="hdr-total">2670</span> Levels</p>
   </div>
   <div class="search-wrap">
     <input type="text" id="search" placeholder="Search levels...">
     <div class="filter-btns">
-      <button class="filter-btn" data-filter="all" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" data-filter="blockout" onclick="setFilter('blockout',this)">BlockOut</button>
+      <button class="filter-btn" data-filter="cbj" onclick="setFilter('cbj',this)">CBJ</button>
       <button class="filter-btn" data-filter="hard" onclick="setFilter('hard',this)">Hard</button>
       <button class="filter-btn" data-filter="t64" onclick="setFilter('t64',this)">T64</button>
     </div>

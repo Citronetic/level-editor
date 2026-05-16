@@ -833,6 +833,9 @@ export function renderLevel() {
     ctx.textAlign = 'left';
   }
 
+  // ─── CBJ OVERLAY (Color Block Jam-specific extras: badges + crates + lasers + ivy + …) ───
+  drawCbjOverlay(state.currentLevel, gx, gy, cellSize);
+
   // ─── SELECTION HIGHLIGHT (merged from monkey-patch) ───
   if (!state.selectedElement || !state.currentLevel) return;
 
@@ -887,4 +890,176 @@ export function renderLevel() {
     ctx.fillStyle = '#ff6b6b';
     ctx.fillText(state.moveViolation, tx, ty);
   }
+}
+
+// ─── CBJ overlay renderer ───
+// Draws CBJ-specific elements (badges + crates + lasers + ivy + barriers + buttons + cleaners)
+// on top of the standard BlockOut rendering. Reads custom CBJ_* fields written by convert_cbj.py.
+// Safe no-op for plain BlockOut levels (CBJ_* fields just won't exist).
+function drawCbjOverlay(level, gx, gy, cs) {
+  if (!level) return;
+  function colHex(idx) { const c = COLORS[String(idx)]; return c?.hex || '#888'; }
+  function darken2(hex, amt) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgb(${Math.max(0,Math.round(r*(1-amt)))},${Math.max(0,Math.round(g*(1-amt)))},${Math.max(0,Math.round(b*(1-amt)))})`;
+  }
+
+  // ── Block badges (label-style icons on each block's bbox centre) ──
+  (level.BMS || []).forEach(bm => {
+    const pts = bm.BPMS || [];
+    if (!pts.length) return;
+    const xs = pts.map(p => gx(p.x));
+    const ys = pts.map(p => gy(p.y));
+    const cx = (Math.min(...xs) + Math.max(...xs) + cs) / 2;
+    const cy = (Math.min(...ys) + Math.max(...ys) + cs) / 2;
+
+    const badges = [];
+    const el = bm.CBJ_EL;
+    if (el === 'Key')        badges.push('🗝');
+    if (el === 'Curtain')    badges.push('🎭');
+    if (el === 'Scissors')   badges.push('✂');
+    if (el === 'HiddenColor' && bm.CBJ_HIDDEN > 0) badges.push(`?${bm.CBJ_HIDDEN}`);
+    if (el === 'CountBomb'   && bm.BD > 0)         badges.push(`💣${bm.BD}`);
+    if (el === 'TimerBomb'   && bm.CBJ_TIMER > 0)  badges.push(`⏱${Math.round(bm.CBJ_TIMER)}s`);
+    if (el === 'ColorfulIce' && bm.BIC > 0)        badges.push(`❄${bm.BIC}`);
+    if (el === 'Ropes'       && bm.CBJ_ROPES?.length) badges.push(`⛓${bm.CBJ_ROPES.length}`);
+    if (el === 'Lock'        && bm.KID > 0)        badges.push(`🔒${bm.KID}`);
+    if (bm.CBJ_RAINBOW)  badges.push('🌈');
+    if (bm.CBJ_MAGNET)   badges.push('🧲');
+    if (bm.CBJ_PUZZLE)   badges.push('🧩');
+    if (bm.CBJ_BLOCKER)  badges.push(bm.CBJ_BLOCKER_CNT > 0 ? `🛑${bm.CBJ_BLOCKER_CNT}` : '🛑');
+    if (bm.CBJ_DIRTY)    badges.push('🪣');
+    if (bm.CBJ_TIMECAPS) badges.push('⌛');
+    if (bm.CBJ_CSWITCH)  badges.push('🎨');
+
+    const iceAlready = (bm.BIC > 0) && el === 'Ice';
+    if (badges.length && !iceAlready) {
+      const t = badges.join(' ');
+      ctx.font = `bold ${Math.max(11, cs * 0.32)}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.strokeStyle = 'rgba(0,0,0,0.75)'; ctx.lineWidth = 3;
+      ctx.strokeText(t, cx, cy);
+      ctx.fillStyle = '#fff';
+      ctx.fillText(t, cx, cy);
+    }
+  });
+
+  function drawCrate(c, fillColor, marker) {
+    const x = gx(c.x), y = gy(c.y);
+    const grad = ctx.createLinearGradient(x, y, x + cs, y + cs);
+    grad.addColorStop(0, fillColor);
+    grad.addColorStop(1, darken2(fillColor, 0.4));
+    ctx.fillStyle = grad;
+    roundRect(ctx, x + 2, y + 2, cs - 4, cs - 4, 4);
+    ctx.fill();
+    ctx.strokeStyle = darken2(fillColor, 0.55); ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x + 4, y + 4); ctx.lineTo(x + cs - 4, y + cs - 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 4, y + cs - 4); ctx.lineTo(x + cs - 4, y + 4); ctx.stroke();
+    if (marker) {
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.font = `bold ${cs * 0.32}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(marker, x + cs / 2, y + cs / 2);
+    }
+    if ((c.counter ?? 0) > 0) {
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)'; ctx.lineWidth = 2;
+      ctx.font = `bold ${cs * 0.3}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.strokeText(String(c.counter), x + cs * 0.78, y + cs * 0.22);
+      ctx.fillText(String(c.counter), x + cs * 0.78, y + cs * 0.22);
+    }
+  }
+  (level.CBJ_CRATES   || []).forEach(c => drawCrate(c, '#a0782e', null));
+  (level.CBJ_MCRATES  || []).forEach(c => drawCrate(c, '#c89048', '⇆'));
+  (level.CBJ_CCRATES  || []).forEach(c => drawCrate(c, colHex(c.color), null));
+  (level.CBJ_PCRATES  || []).forEach(c => drawCrate(c, colHex(c.color), '🧩'));
+  (level.CBJ_MCPATHS  || []).forEach(c => {
+    const x = gx(c.x), y = gy(c.y);
+    const col = colHex(c.color);
+    ctx.fillStyle = col + '66';
+    roundRect(ctx, x + 4, y + 4, cs - 8, cs - 8, 3); ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  (level.CBJ_BUTTONS || []).forEach(b => {
+    const x = gx(b.x) + cs / 2, y = gy(b.y) + cs / 2;
+    const col = colHex(b.color);
+    ctx.fillStyle = '#222';
+    ctx.beginPath(); ctx.arc(x, y, cs * 0.32, 0, Math.PI * 2); ctx.fill();
+    const grad = ctx.createRadialGradient(x - cs * 0.1, y - cs * 0.1, cs * 0.04, x, y, cs * 0.28);
+    grad.addColorStop(0, '#fff'); grad.addColorStop(0.3, col); grad.addColorStop(1, darken2(col, 0.5));
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(x, y, cs * 0.28, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = darken2(col, 0.55); ctx.lineWidth = 1.5; ctx.stroke();
+  });
+
+  (level.CBJ_LASERS || []).forEach(l => {
+    const sx = gx(l.src.x) + cs / 2, sy = gy(l.src.y) + cs / 2;
+    const rx = gx(l.dst.x) + cs / 2, ry = gy(l.dst.y) + cs / 2;
+    const col = colHex(l.color);
+    ctx.strokeStyle = col + 'aa'; ctx.lineWidth = Math.max(4, cs * 0.18);
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(rx, ry); ctx.stroke();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1.5, cs * 0.05);
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(rx, ry); ctx.stroke();
+    ctx.fillStyle = '#222';
+    roundRect(ctx, sx - cs * 0.22, sy - cs * 0.22, cs * 0.44, cs * 0.44, 3); ctx.fill();
+    ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = col;
+    roundRect(ctx, rx - cs * 0.2, ry - cs * 0.2, cs * 0.4, cs * 0.4, 3); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+
+  (level.CBJ_IVY || []).forEach(iv => {
+    const pts = iv.parts || [];
+    if (!pts.length) return;
+    ctx.strokeStyle = '#3a8b5b'; ctx.lineWidth = cs * 0.16; ctx.lineCap = 'round';
+    ctx.beginPath();
+    pts.forEach((p, i) => {
+      const x = gx(p.x) + cs / 2, y = gy(p.y) + cs / 2;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    pts.forEach(p => {
+      const x = gx(p.x) + cs / 2, y = gy(p.y) + cs / 2;
+      ctx.fillStyle = p.is_start ? '#5cd47c' : '#2e8b57';
+      ctx.beginPath(); ctx.arc(x, y, cs * 0.14, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#1f5a3a'; ctx.lineWidth = 1; ctx.stroke();
+    });
+  });
+
+  (level.CBJ_BARRIERS || []).forEach(b => {
+    const x = gx(b.x) + cs / 2, y = gy(b.y) + cs / 2;
+    const len = (b.length || 1) * cs;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(-(b.rot || 0) * Math.PI / 180);
+    ctx.fillStyle = b.active ? 'rgba(255,80,80,0.75)' : 'rgba(120,90,60,0.55)';
+    roundRect(ctx, -len / 2, -cs * 0.08, len, cs * 0.16, 2); ctx.fill();
+    ctx.strokeStyle = b.active ? '#ff4040' : '#8b5520'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.restore();
+  });
+
+  (level.CBJ_CLEANERS || []).forEach(c => {
+    const x = gx(c.x) + cs / 2, y = gy(c.y) + cs / 2;
+    ctx.fillStyle = 'rgba(123,225,255,0.4)';
+    ctx.beginPath(); ctx.arc(x, y, cs * 0.3, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#7be1ff'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = `${cs * 0.35}px sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('✨', x, y);
+  });
+
+  (level.CMS || []).forEach(cm => {
+    if (cm.CBJ_TINT == null) return;
+    const x = gx(cm.BPM.x), y = gy(cm.BPM.y);
+    ctx.fillStyle = colHex(cm.CBJ_TINT) + '55';
+    roundRect(ctx, x + 2, y + 2, cs - 4, cs - 4, 3);
+    ctx.fill();
+  });
 }
