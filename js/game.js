@@ -212,8 +212,10 @@ export function trySlide(blockIdx, dirX, dirY, maxSteps = 200) {
     if (exitDoor) { exited = true; break; }
   }
 
-  // Apply hit-curtain side effect — one decrement per swipe regardless of step count
-  if (totalSteps === 0 && curtainHitIdx >= 0) {
+  // Hit-curtain side effect — decrement on EVERY swipe that bumps a curtain,
+  // regardless of how many cells the block managed to travel before hitting it.
+  // This matches the intuitive "swipe taps the curtain once → CLC -= 1" model.
+  if (curtainHitIdx >= 0) {
     const cl = lvl.CLMS[curtainHitIdx];
     if (cl && cl.CLC > 0) cl.CLC -= 1;
   }
@@ -341,42 +343,46 @@ export function setBlockPreviewBPMS(blockIdx, finalBPMS) {
   bm.BPMS.forEach((p, i) => { p.x = finalBPMS[i].x; p.y = finalBPMS[i].y; });
 }
 
-// Chain two slides (X then Y or Y then X) to navigate around an L corner.
+// Greedy axis-alternating navigation that handles ANY number of corners.
 // dxCells/dyCells are signed cell deltas the user is requesting from origBPMS.
+// Each iteration: slide as far as possible toward the remaining target in the
+// axis with the larger remaining magnitude; if blocked, switch axes; repeat
+// until both axes reach 0 or no progress is possible.
 // Returns {bpms, curtainIdx} — bpms is the final preview position.
 export function navigateDrag(blockIdx, origBPMS, dxCells, dyCells) {
-  const dirX = Math.sign(dxCells);
-  const dirY = Math.sign(dyCells);
-  const absX = Math.abs(dxCells);
-  const absY = Math.abs(dyCells);
+  let bpms = origBPMS.map(p => ({ x: p.x, y: p.y }));
+  let remX = dxCells | 0;
+  let remY = dyCells | 0;
+  let curtainIdx = -1;
 
-  const chain = (firstDX, firstDY, firstAmt, secondDX, secondDY, secondAmt) => {
-    let bpms = origBPMS.map(p => ({ x: p.x, y: p.y }));
-    let curtainIdx = -1;
-    if (firstAmt > 0) {
-      const sim = simulateSlide(blockIdx, bpms, firstDX, firstDY, firstAmt);
-      bpms = bpms.map(p => ({ x: p.x + firstDX * sim.steps, y: p.y + firstDY * sim.steps }));
-      if (sim.steps < firstAmt && sim.curtainIdx >= 0) curtainIdx = sim.curtainIdx;
+  const tryAxis = (axis) => {
+    const dx = axis === 'x' ? Math.sign(remX) : 0;
+    const dy = axis === 'y' ? Math.sign(remY) : 0;
+    const want = axis === 'x' ? Math.abs(remX) : Math.abs(remY);
+    if (want === 0 || (dx === 0 && dy === 0)) return 0;
+    const sim = simulateSlide(blockIdx, bpms, dx, dy, want);
+    if (sim.steps === 0) {
+      if (sim.curtainIdx >= 0 && curtainIdx < 0) curtainIdx = sim.curtainIdx;
+      return 0;
     }
-    if (secondAmt > 0) {
-      const sim = simulateSlide(blockIdx, bpms, secondDX, secondDY, secondAmt);
-      bpms = bpms.map(p => ({ x: p.x + secondDX * sim.steps, y: p.y + secondDY * sim.steps }));
-      if (sim.steps < secondAmt && sim.curtainIdx >= 0 && curtainIdx < 0) curtainIdx = sim.curtainIdx;
-    }
-    return { bpms, curtainIdx };
+    bpms = bpms.map(p => ({ x: p.x + dx * sim.steps, y: p.y + dy * sim.steps }));
+    if (axis === 'x') remX -= dx * sim.steps; else remY -= dy * sim.steps;
+    if (sim.curtainIdx >= 0 && curtainIdx < 0) curtainIdx = sim.curtainIdx;
+    return sim.steps;
   };
 
-  if (absX === 0 && absY === 0) {
-    return { bpms: origBPMS.map(p => ({ x: p.x, y: p.y })), curtainIdx: -1 };
+  // Up to 16 segments = 15 corners. Plenty for any sane drag path.
+  for (let safety = 0; safety < 16; safety++) {
+    if (remX === 0 && remY === 0) break;
+    // Prefer the axis with more remaining distance — produces the most direct path.
+    const preferX = Math.abs(remX) >= Math.abs(remY);
+    const moved = preferX ? tryAxis('x') : tryAxis('y');
+    if (moved > 0) continue;
+    // Preferred axis blocked — try the other.
+    const other = preferX ? tryAxis('y') : tryAxis('x');
+    if (other === 0) break;  // both axes blocked — done
   }
-  if (absY === 0) return chain(dirX, 0, absX, 0, 0, 0);
-  if (absX === 0) return chain(0, dirY, absY, 0, 0, 0);
-
-  // Try both orders and pick the longer-reaching path
-  const xy = chain(dirX, 0, absX, 0, dirY, absY);
-  const yx = chain(0, dirY, absY, dirX, 0, absX);
-  const dist = (b) => Math.abs(b[0].x - origBPMS[0].x) + Math.abs(b[0].y - origBPMS[0].y);
-  return dist(xy.bpms) >= dist(yx.bpms) ? xy : yx;
+  return { bpms, curtainIdx };
 }
 
 // Try every direction's leading edge as a potential exit door.
@@ -399,6 +405,13 @@ export function commitDrag(blockIdx, origBPMS, curtainHitIdx) {
 
   const dx = bm.BPMS[0].x - origBPMS[0].x;
   const dy = bm.BPMS[0].y - origBPMS[0].y;
+
+  // Curtain bump → decrement that curtain once, regardless of whether the
+  // block actually moved. Match trySlide's swipe semantics.
+  if (curtainHitIdx >= 0) {
+    const cl = lvl.CLMS?.[curtainHitIdx];
+    if (cl && (cl.CLC || 0) > 0) cl.CLC -= 1;
+  }
 
   if (dx === 0 && dy === 0) return { moved: 0, curtainBumped: curtainHitIdx >= 0 };
 
