@@ -107,7 +107,7 @@ export function addCustomLevelToSidebar(entry) {
       <span class="li-name">${entry.name}</span>
     </div>
     <div class="li-actions">
-      <button class="li-action-btn" data-act="clone" title="克隆">＋</button>
+      <button class="li-action-btn" data-act="clone" title="复制并编辑">＋</button>
       <button class="li-action-btn li-action-danger" data-act="delete" title="删除">×</button>
     </div>
     <div class="li-badges"><span class="badge" style="background:rgba(167,139,250,.15);color:var(--accent-bright)">自定义</span>${diffBadge}</div>`;

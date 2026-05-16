@@ -22,7 +22,7 @@ export function updateModeToggleVisibility() {
 }
 
 export function cloneCurrentLevel() {
-  if (!state.currentLevel) { showViolation('先选一个关卡再克隆'); return; }
+  if (!state.currentLevel) { showViolation('先选一个关卡再复制'); return; }
   const sourceId = state.currentLevelId || 'level';
   document.getElementById('clone-source').textContent = sourceId;
   document.getElementById('clone-name').value = `${sourceId}-copy`;

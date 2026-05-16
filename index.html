@@ -50,7 +50,7 @@
       </div>
       <div class="tb-actions">
         <button class="tb-action-btn primary" onclick="createBlankLevel()" title="创建空白关卡">+ 新建</button>
-        <button class="tb-action-btn" onclick="cloneCurrentLevel()" title="克隆当前关卡">克隆</button>
+        <button class="tb-action-btn copy-edit" onclick="cloneCurrentLevel()" title="把当前关卡复制一份保存为可编辑的自定义关卡">📋 复制并编辑</button>
         <button class="tb-action-btn" onclick="importLevelFromFile()" title="导入JSON关卡文件">导入</button>
         <button class="tb-action-btn" onclick="exportLevel()" title="导出当前关卡为JSON文件">导出</button>
       </div>
@@ -269,7 +269,7 @@
 <!-- ─── CLONE MODAL ─── -->
 <div id="clone-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this) closeCloneModal()">
   <div class="modal">
-    <h2>克隆关卡</h2>
+    <h2>复制并编辑关卡</h2>
     <div style="font-size:11px;color:var(--text-dim);margin-bottom:12px">来源: <span id="clone-source" style="color:var(--text)"></span></div>
     <div class="modal-row">
       <label>关卡名称</label>
@@ -285,7 +285,7 @@
     </div>
     <div class="modal-actions">
       <button onclick="closeCloneModal()">取消</button>
-      <button class="primary" onclick="confirmClone()">克隆</button>
+      <button class="primary" onclick="confirmClone()">确认复制</button>
     </div>
   </div>
 </div>

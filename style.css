@@ -144,6 +144,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
 .tb-action-btn:hover { background: var(--bg-hover); color: var(--text); }
 .tb-action-btn.primary { background: var(--accent); color: #fff; }
 .tb-action-btn.primary:hover { opacity: .85; }
+/* Copy-and-edit button: distinctive teal accent so the "make my own copy"
+   affordance is visible at a glance and doesn't blend into the toolbar. */
+.tb-action-btn.copy-edit {
+  background: rgba(45, 212, 191, 0.14);
+  color: #2dd4bf;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  font-weight: 600;
+}
+.tb-action-btn.copy-edit:hover {
+  background: rgba(45, 212, 191, 0.24);
+  color: #5eead4;
+  border-color: rgba(45, 212, 191, 0.6);
+}
 
 /* Toolbar toggles */
 .tb-toggles { display: flex; gap: 8px; align-items: center; }
