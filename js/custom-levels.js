@@ -2,6 +2,8 @@ import { state } from './state.js';
 import { updateInfoPanel, updateJsonPanel } from './panels.js';
 import { switchEditMode, setTool, showViolation } from './design.js';
 import { addCustomLevelToSidebar } from './sidebar.js';
+import { stopGame } from './game.js';
+import { refreshPlayButtons } from './play-ui.js';
 
 // Set via initCustomLevels to avoid circular deps
 let _zoomFit = null;
@@ -53,6 +55,10 @@ export function confirmClone() {
   });
 
   closeCloneModal();
+  // The level we cloned from may have been auto-playing — stop it so the new
+  // custom level lands cleanly in design mode without the play HUD lingering.
+  if (state.game) stopGame();
+  refreshPlayButtons();
   updateModeToggleVisibility();
   switchEditMode('design');
   setTool('cell');
@@ -149,6 +155,10 @@ export function confirmNewLevel() {
   state.doorStates = {};
 
   closeNewLevelModal();
+  // Same as confirmClone: stop the previous level's play sim before landing
+  // in the fresh empty design canvas.
+  if (state.game) stopGame();
+  refreshPlayButtons();
   updateModeToggleVisibility();
   switchEditMode('design');
   setTool('cell');

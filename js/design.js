@@ -479,31 +479,40 @@ function paintGrinder(x, y) {
   return true;
 }
 
+// Layer ordering: top of the visual stack first, bottom last. The eraser
+// peels ONE layer per click. Click again to remove what's underneath
+// (e.g., first click removes a block, second click clears the cell under it).
+const ERASE_LAYERS = [
+  ['BMS',  true],   // block (topmost gameplay element)
+  ['DMS',  true],   // door
+  ['EMS',  true],   // elevator
+  ['CLMS', true],   // curtain
+  ['CCMS', true],   // color cell
+  ['GRM',  true],   // grinder
+  ['GMS',  false],  // generator
+  ['WMS',  false],  // wall
+  ['CMS',  false],  // checker cell (bottom-most)
+];
+
 function eraseAt(x, y) {
   const matchPos = (p) => p.x === x && p.y === y;
-  const eraseFromList = (key, hasBPMS) => {
-    if (!state.currentLevel[key]) return false;
-    let any = false;
-    for (let i = state.currentLevel[key].length - 1; i >= 0; i--) {
-      const it = state.currentLevel[key][i];
+  for (const [key, hasBPMS] of ERASE_LAYERS) {
+    const list = state.currentLevel[key];
+    if (!list) continue;
+    for (let i = list.length - 1; i >= 0; i--) {
+      const it = list[i];
       const hit = hasBPMS
-        ? (it.BPMS||[]).some(matchPos)
+        ? (it.BPMS || []).some(matchPos)
         : (it.BPM && matchPos(it.BPM));
-      if (hit) { state.currentLevel[key].splice(i, 1); any = true; }
+      if (hit) {
+        list.splice(i, 1);
+        state.selectedElement = null;
+        afterPaint();
+        return true;
+      }
     }
-    return any;
-  };
-  eraseFromList('BMS',  true);
-  eraseFromList('DMS',  true);
-  eraseFromList('EMS',  true);
-  eraseFromList('CLMS', true);
-  eraseFromList('CCMS', true);
-  eraseFromList('GRM',  true);
-  eraseFromList('GMS',  false);
-  eraseFromList('WMS',  false);
-  eraseFromList('CMS',  false);
-  state.selectedElement = null;
-  afterPaint();
+  }
+  // Nothing to erase at this cell — no-op.
   return true;
 }
 

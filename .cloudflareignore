@@ -3,3 +3,6 @@
 .DS_Store
 *.md
 serve.sh
+node_modules
+package.json
+package-lock.json
