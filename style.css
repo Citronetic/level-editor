@@ -122,7 +122,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helv
 .tb-tools {
   height: 40px; min-height: 40px; gap: 12px; overflow-x: auto;
 }
+/* Block-tool options row (colors + shape + ice). Lives below the standard
+   tools row and only shows for tools that need a color (block/door/colorcell). */
+.tb-block-opts {
+  height: 38px; min-height: 38px; gap: 12px;
+  border-top: 1px solid var(--border);
+  align-items: center; padding: 0 14px;
+}
+.tb-block-opts > * { flex-shrink: 0; }
 .tb-tools::-webkit-scrollbar { height: 4px; }
+/* Prevent flex children from shrinking and wrapping their two-char Chinese
+   labels into a vertical stack (坐\n标 / 棋\n盘\n格). If content exceeds the
+   viewport width, the row scrolls horizontally instead. */
+.tb-tools > *,
+.tb-tools .tool-toggle,
+.tb-tools .tool-btn,
+.tb-tools .tool-palette,
+.tb-tools .tool-group,
+.tb-tools #block-tool-opts,
+.tb-tools #color-swatches,
+.tb-tools #shape-palette { flex-shrink: 0; white-space: nowrap; }
 
 /* Mode toggle pills */
 .mode-toggle { display: flex; gap: 0; background: var(--bg-darkest); border-radius: 6px; overflow: hidden; }

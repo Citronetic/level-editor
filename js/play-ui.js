@@ -2,7 +2,7 @@ import { state } from './state.js';
 import { startGame, resetGame, stopGame, isPlayingAnyStatus } from './game.js';
 import { renderLevel } from './render.js';
 import { updateInfoPanel, updateJsonPanel } from './panels.js';
-import { showViolation } from './design.js';
+import { showViolation, switchEditMode } from './design.js';
 
 // ── Slide animation tick ─────────────────────────────────────────────────
 let _animRAF = 0;
@@ -28,19 +28,25 @@ const $ = (id) => document.getElementById(id);
 
 export function refreshPlayButtons() {
   const playing = isPlayingAnyStatus();
-  const btnPlay = $('btn-play');
   const btnReset = $('btn-reset');
   const btnStop = $('btn-stop');
   const hud = $('play-hud');
   const wrap = $('canvas-wrap');
-  if (!btnPlay || !btnReset || !btnStop || !hud || !wrap) return;
-  btnPlay.style.display = playing ? 'none' : '';
+  if (!btnReset || !btnStop || !hud || !wrap) return;
   btnReset.style.display = playing ? '' : 'none';
   btnStop.style.display = playing ? '' : 'none';
   hud.style.display = playing ? 'flex' : 'none';
   wrap.classList.toggle('playing', playing);
-  // Disable design mode toggle visually while playing
-  document.querySelectorAll('.mode-btn').forEach(b => { b.disabled = playing; b.style.opacity = playing ? '0.4' : ''; });
+  // The mode-btn for "游戏模式" stays clickable even mid-play so users can
+  // tap it to restart the sim after ↺ resets, but we mute the inactive one
+  // visually so they don't accidentally drop out of design.
+}
+
+/* Convenience wrapper for the "游戏模式" pill in the toolbar: enter play mode
+ * AND fire up the sim in one click — no need for a separate ▶ 试玩 button. */
+export function enterPlayMode() {
+  switchEditMode('play');
+  playStart();
 }
 
 export function updateHUD() {

@@ -40,11 +40,10 @@
       <span id="level-title"></span>
       <span id="readonly-badge" style="font-size:10px;padding:3px 8px;background:var(--bg-card);color:var(--text-dim);border-radius:4px">只读</span>
       <div class="mode-toggle" style="display:none">
-        <button class="mode-btn active" data-mode="play" onclick="switchEditMode('play')">游戏模式</button>
+        <button class="mode-btn active" data-mode="play" onclick="enterPlayMode()">游戏模式</button>
         <button class="mode-btn" data-mode="design" onclick="switchEditMode('design')">设计模式</button>
       </div>
       <div class="tb-play" style="display:flex;gap:6px;align-items:center;margin-left:8px">
-        <button class="tb-action-btn primary" id="btn-play" onclick="playStart()" title="开始试玩 — 点选方块 → 方向键单格 / WASD 一推到底 / 直接拖拽">▶ 试玩</button>
         <button class="tb-action-btn" id="btn-reset" style="display:none" onclick="playReset()" title="重置回开局">↺ 重置</button>
         <button class="tb-action-btn" id="btn-stop" style="display:none" onclick="playStop()" title="退出试玩">■ 退出</button>
       </div>
@@ -90,41 +89,42 @@
           <button class="tool-btn"        data-tool="grinder"   onclick="setTool('grinder',this)"  ><span class="tool-dot" style="background:radial-gradient(circle,#ffa500,#e67e22)"></span>研磨器</button>
           <button class="tool-btn"        data-tool="erase"     onclick="setTool('erase',this)"    ><span class="tool-dot" style="background:transparent;border:1px dashed #ff7675;position:relative">&#x2715;</span>擦除</button>
         </div>
-        <span id="block-tool-opts" style="display:none;gap:6px;align-items:center">
-          <span class="color-swatches" id="color-swatches">
-            <button class="color-swatch active" data-color="0" style="background:#ff5253" title="Red (0)"   onclick="setColor(0,this)"></button>
-            <button class="color-swatch"        data-color="1" style="background:#54a0ff" title="Blue (1)"  onclick="setColor(1,this)"></button>
-            <button class="color-swatch"        data-color="2" style="background:#feca57" title="Yellow (2)" onclick="setColor(2,this)"></button>
-            <button class="color-swatch"        data-color="3" style="background:#1dd1a1" title="Green (3)" onclick="setColor(3,this)"></button>
-            <button class="color-swatch"        data-color="4" style="background:#9b59b6" title="Purple (4)" onclick="setColor(4,this)"></button>
-            <button class="color-swatch"        data-color="5" style="background:#ff9f43" title="Orange (5)" onclick="setColor(5,this)"></button>
-            <button class="color-swatch"        data-color="6" style="background:#e91e90" title="Pink (6)"  onclick="setColor(6,this)"></button>
-            <button class="color-swatch"        data-color="7" style="background:#2c3e80" title="DarkBlue (7)" onclick="setColor(7,this)"></button>
-            <button class="color-swatch"        data-color="8" style="background:#00cec9" title="Turquoise (8)" onclick="setColor(8,this)"></button>
-            <button class="color-swatch"        data-color="9" style="background:#00b894" title="DarkGreen (9)" onclick="setColor(9,this)"></button>
-          </span>
-          <input type="hidden" id="place-color" value="0">
-          <span class="shape-palette" id="shape-palette">
-            <button class="shape-btn active" data-shape="1x1" title="1×1"  onclick="setShape('1x1',this)">1×1</button>
-            <button class="shape-btn"        data-shape="2x2" title="2×2"  onclick="setShape('2x2',this)">2×2</button>
-            <button class="shape-btn"        data-shape="3x3" title="3×3"  onclick="setShape('3x3',this)">3×3</button>
-            <button class="shape-btn"        data-shape="L"   title="L 形" onclick="setShape('L',this)">L</button>
-            <button class="shape-btn"        data-shape="T"   title="T 形" onclick="setShape('T',this)">T</button>
-            <button class="shape-btn"        data-shape="I-h" title="水平长条 (自动 BAD=1)" onclick="setShape('I-h',this)">━━</button>
-            <button class="shape-btn"        data-shape="I-v" title="垂直长条 (自动 BAD=2)" onclick="setShape('I-v',this)">┃</button>
-            <button class="shape-btn"        data-shape="+"   title="十字" onclick="setShape('+',this)">＋</button>
-            <button class="shape-btn shape-btn-draw" id="shape-draw-btn" title="自定义形状（点格子勾选 → ✓ 完成）" onclick="enterDrawMode()">✏️</button>
-          </span>
-          <span id="draw-mode-bar" style="display:none;gap:4px;align-items:center;margin-left:4px">
-            <button class="tb-action-btn primary" id="draw-commit-btn" onclick="commitDraftBlock()">✓ 完成 (<span id="draft-count">0</span>)</button>
-            <button class="tb-action-btn" onclick="cancelDraftBlock()">取消</button>
-          </span>
-          <span id="ice-tool-opts" style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
-            <label style="font-size:11px;color:var(--text-dim)">冰冻</label>
-            <input type="number" id="place-ice" min="0" max="10" value="0" style="width:40px;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px;border-radius:4px;font-size:11px">
-          </span>
-        </span>
       </div>
+      <input type="hidden" id="place-color" value="0">
+    </div>
+    <!-- Row 3: shown only when block/door/colorcell tool active. Colors + shape + ice -->
+    <div class="tb-row tb-block-opts" id="block-tool-opts" style="display:none">
+      <span class="color-swatches" id="color-swatches">
+        <button class="color-swatch active" data-color="0" style="background:#ff5253" title="Red (0)"   onclick="setColor(0,this)"></button>
+        <button class="color-swatch"        data-color="1" style="background:#54a0ff" title="Blue (1)"  onclick="setColor(1,this)"></button>
+        <button class="color-swatch"        data-color="2" style="background:#feca57" title="Yellow (2)" onclick="setColor(2,this)"></button>
+        <button class="color-swatch"        data-color="3" style="background:#1dd1a1" title="Green (3)" onclick="setColor(3,this)"></button>
+        <button class="color-swatch"        data-color="4" style="background:#9b59b6" title="Purple (4)" onclick="setColor(4,this)"></button>
+        <button class="color-swatch"        data-color="5" style="background:#ff9f43" title="Orange (5)" onclick="setColor(5,this)"></button>
+        <button class="color-swatch"        data-color="6" style="background:#e91e90" title="Pink (6)"  onclick="setColor(6,this)"></button>
+        <button class="color-swatch"        data-color="7" style="background:#2c3e80" title="DarkBlue (7)" onclick="setColor(7,this)"></button>
+        <button class="color-swatch"        data-color="8" style="background:#00cec9" title="Turquoise (8)" onclick="setColor(8,this)"></button>
+        <button class="color-swatch"        data-color="9" style="background:#00b894" title="DarkGreen (9)" onclick="setColor(9,this)"></button>
+      </span>
+      <span class="shape-palette" id="shape-palette">
+        <button class="shape-btn active" data-shape="1x1" title="1×1"  onclick="setShape('1x1',this)">1×1</button>
+        <button class="shape-btn"        data-shape="2x2" title="2×2"  onclick="setShape('2x2',this)">2×2</button>
+        <button class="shape-btn"        data-shape="3x3" title="3×3"  onclick="setShape('3x3',this)">3×3</button>
+        <button class="shape-btn"        data-shape="L"   title="L 形" onclick="setShape('L',this)">L</button>
+        <button class="shape-btn"        data-shape="T"   title="T 形" onclick="setShape('T',this)">T</button>
+        <button class="shape-btn"        data-shape="I-h" title="水平长条 (自动 BAD=1)" onclick="setShape('I-h',this)">━━</button>
+        <button class="shape-btn"        data-shape="I-v" title="垂直长条 (自动 BAD=2)" onclick="setShape('I-v',this)">┃</button>
+        <button class="shape-btn"        data-shape="+"   title="十字" onclick="setShape('+',this)">＋</button>
+        <button class="shape-btn shape-btn-draw" id="shape-draw-btn" title="自定义形状（点格子勾选 → ✓ 完成）" onclick="enterDrawMode()">✏️</button>
+      </span>
+      <span id="draw-mode-bar" style="display:none;gap:4px;align-items:center;margin-left:4px">
+        <button class="tb-action-btn primary" id="draw-commit-btn" onclick="commitDraftBlock()">✓ 完成 (<span id="draft-count">0</span>)</button>
+        <button class="tb-action-btn" onclick="cancelDraftBlock()">取消</button>
+      </span>
+      <span id="ice-tool-opts" style="display:inline-flex;gap:6px;align-items:center;margin-left:4px">
+        <label style="font-size:11px;color:var(--text-dim)">冰冻</label>
+        <input type="number" id="place-ice" min="0" max="10" value="0" style="width:40px;background:var(--bg-darkest);color:var(--text);border:1px solid var(--border);padding:4px;border-radius:4px;font-size:11px">
+      </span>
     </div>
   </div>
 

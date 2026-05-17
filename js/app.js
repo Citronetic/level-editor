@@ -15,7 +15,7 @@ import {
   updateNewLevelPreview, importLevelFromFile, updateModeToggleVisibility,
   initCustomLevels
 } from './custom-levels.js';
-import { playStart, playReset, playStop, playNextLevel, refreshPlayButtons, tickAnim, updateHUD } from './play-ui.js';
+import { playStart, playReset, playStop, playNextLevel, enterPlayMode, refreshPlayButtons, tickAnim, updateHUD } from './play-ui.js';
 import { stopGame, isPlaying, trySlide } from './game.js';
 
 // ── Wire up lazy dependencies ──
@@ -34,7 +34,7 @@ Object.assign(window, {
   selectBlock, editProp, editDoorProp, editCurtainProp,
   doorMeltIce, doorResetIce, doorToggleStar, doorToggleTurn,
   removeCellFromElement, deleteSelected,
-  playStart, playReset, playStop, playNextLevel,
+  playStart, playReset, playStop, playNextLevel, enterPlayMode,
 });
 
 // ── Keyboard handler (consolidated) ──
@@ -164,7 +164,9 @@ async function loadLevel(seedId) {
     }
     if (custom) title = custom.name + (custom.difficulty ? ` (${custom.difficulty})` : '');
     document.getElementById('level-title').textContent = title;
-    if (!state.isCustomLevel) switchEditMode('play');
+    // Custom levels land in design mode (the user clicked them to edit);
+    // readonly levels go to play mode (the user clicked them to play).
+    switchEditMode(state.isCustomLevel ? 'design' : 'play');
     updateModeToggleVisibility();
     updateInfoPanel();
     updateJsonPanel();

@@ -31,6 +31,10 @@ export function switchEditMode(mode) {
   }
   state.editMode = mode;
   document.getElementById('design-tools').style.display = mode === 'design' ? 'flex' : 'none';
+  // The block-tool-opts row lives outside design-tools (it's the 3rd toolbar
+  // row), so hide it explicitly when leaving design mode.
+  const blockOpts = document.getElementById('block-tool-opts');
+  if (blockOpts && mode !== 'design') blockOpts.style.display = 'none';
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   wrap.style.cursor = mode === 'design' ? 'crosshair' : 'default';
   state.selectedElement = null;
@@ -46,7 +50,9 @@ export function setTool(tool, btnEl) {
   state.activeTool = tool;
   document.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
   const showColor = tool === 'block' || tool === 'door' || tool === 'colorcell';
-  document.getElementById('block-tool-opts').style.display = showColor ? 'inline-flex' : 'none';
+  // block-tool-opts is now its own toolbar row — use flex (full row), not
+  // inline-flex (shrink-to-fit). Hidden when no colored tool is active.
+  document.getElementById('block-tool-opts').style.display = showColor ? 'flex' : 'none';
   document.getElementById('ice-tool-opts').style.display = tool === 'block' ? 'inline-flex' : 'none';
   // Shape palette only meaningful for block tool
   const shapePalette = document.getElementById('shape-palette');
@@ -300,6 +306,27 @@ function paintBlock(x, y) {
   const ice = parseInt(document.getElementById('place-ice').value) || 0;
   const bad = SHAPE_DEFAULT_BAD[shapeKey] || 0;
   if (!state.currentLevel.BMS) state.currentLevel.BMS = [];
+
+  // For a single-cell click, auto-merge into an adjacent same-color block if
+  // there is one — quick way to sketch contiguous block groups without
+  // Shift+click. Multi-cell shapes (2x2, L, T, I, +) stay as separate
+  // entries, matching the explicit decision in commit a6f606e.
+  if (shapeKey === '1x1') {
+    const adjIdx = state.currentLevel.BMS.findIndex(bm =>
+      bm.BCT === bct && (bm.BPMS || []).some(p =>
+        (Math.abs(p.x - x) === 1 && p.y === y) ||
+        (Math.abs(p.y - y) === 1 && p.x === x)
+      )
+    );
+    if (adjIdx >= 0) {
+      state.currentLevel.BMS[adjIdx].BPMS.push({ "$type": "BPM", x, y });
+      state.selectedElement = { type: 'block', index: adjIdx };
+      afterPaint();
+      updateSelectionPanel();
+      return true;
+    }
+  }
+
   state.currentLevel.BMS.push({
     "$type": "BM", "BCT": bct,
     "BPMS": positions.map(p => ({ "$type": "BPM", x: p.x, y: p.y })),
