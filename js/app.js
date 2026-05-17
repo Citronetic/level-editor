@@ -15,7 +15,7 @@ import {
   updateNewLevelPreview, importLevelFromFile, updateModeToggleVisibility,
   initCustomLevels
 } from './custom-levels.js';
-import { playStart, playReset, playStop, refreshPlayButtons, tickAnim, updateHUD } from './play-ui.js';
+import { playStart, playReset, playStop, playNextLevel, refreshPlayButtons, tickAnim, updateHUD } from './play-ui.js';
 import { stopGame, isPlaying, trySlide } from './game.js';
 
 // ── Wire up lazy dependencies ──
@@ -34,7 +34,7 @@ Object.assign(window, {
   selectBlock, editProp, editDoorProp, editCurtainProp,
   doorMeltIce, doorResetIce, doorToggleStar, doorToggleTurn,
   removeCellFromElement, deleteSelected,
-  playStart, playReset, playStop,
+  playStart, playReset, playStop, playNextLevel,
 });
 
 // ── Keyboard handler (consolidated) ──
