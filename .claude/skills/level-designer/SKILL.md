@@ -15,6 +15,28 @@ The skill assumes you are running inside the level-editor repository
 (`index.html` + `js/*.js` + `data/levels/*.json` present). If not, refuse
 the task and tell the user to `cd` into the editor checkout first.
 
+## Resources you have access to
+
+This skill folder ships with executable validators and a reference library.
+Use them — don't reimplement.
+
+- [scripts/validate.py](scripts/validate.py) — runs every hard rule (G1..G6,
+  CB1..CB4, element limits) against a level JSON. Exit 0 = valid. Always
+  invoke this on the final output before claiming "done".
+- [scripts/solvability.py](scripts/solvability.py) — per-block slide-graph
+  BFS to a matching door. Necessary-but-not-sufficient solvability check.
+- [scripts/mutate.py](scripts/mutate.py) — apply named mutations (recolor,
+  mirror, rotate, translate, add_ice, add_curtain) that preserve the hard
+  rules where possible.
+- [references/solvability.md](references/solvability.md) — deeper dive
+  on the slide model + BFS algorithm + curtain / ice door handling.
+- [references/mutations-cookbook.md](references/mutations-cookbook.md) —
+  worked before/after snippets for every mutation, plus a chaining
+  example.
+- [references/worked-examples.md](references/worked-examples.md) — three
+  full end-to-end remix sessions (intent → mutations → validation →
+  report). Skim before remixing your first level.
+
 ---
 
 ## 1. What this skill produces
@@ -233,25 +255,41 @@ For each mutation, transform the level data structure-by-structure:
 
 ### Step 5 — Validate against §3
 
-Run through every rule. Concrete checklist:
+Just run the script — it covers every hard rule the skill ships with:
+
+```bash
+python3 .claude/skills/level-designer/scripts/validate.py data/levels/custom-<name>.json
+```
+
+Exit code 0 = pass. On failure, stderr lists which rules broke and which
+elements violated them. Then also check solvability:
+
+```bash
+python3 .claude/skills/level-designer/scripts/solvability.py data/levels/custom-<name>.json
+```
+
+This reports `solvable_isolated` (per-block reachability) and a lower-
+bound on the minimum moves to clear.
+
+If validation FAILS, do not write the file (or leave it in place but
+warn the user). Either auto-correct (e.g., bump a door's BCT to satisfy
+CB1) or report the failure to the user and ask how to proceed.
+
+Manual checklist if you can't run Python for some reason:
 
 ```
 [ ] G1: every BPM has a backing CMS (or door-on-wall slot)
-[ ] G2: walls form closed boundary (corners + edges; no gaps where blocks could exit other than doors)
+[ ] G2: walls form closed boundary (no gaps where blocks could exit other than doors)
 [ ] G3: no overlap (block-block, block-wall, door-on-cell)
 [ ] G4: every multi-cell element is 4-connected
 [ ] G5: every door is wall-adjacent
 [ ] G6: bounding box in [5..14] each dimension
 [ ] CB1: every color with a block has a same-color door
-[ ] CB2: totalBlockCells(c) ≥ totalDoorCells(c) - iceLoad - turnLoad for every c
-[ ] CB3: star doors have a key/star-source
-[ ] CB4: keys (KID>0) are paired
-[ ] Solvability static check: BFS from each block to its door (in the slide graph)
+[ ] CB2: every door with DIC=N has at least N+1 blocks of its color
+[ ] CB3: star doors have a key/star-source (ILE block)
+[ ] CB4: keys (KID>0) are paired across blocks
+[ ] Solvability: BFS from each block to its door (in the slide graph)
 ```
-
-If any FAIL, do not write the file. Either auto-correct (e.g., bump a
-door's BCT to satisfy CB1) or report the failure to the user and ask
-how to proceed.
 
 ### Step 6 — Write the file
 
